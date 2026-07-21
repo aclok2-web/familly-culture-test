@@ -1,0 +1,849 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="utf-8">
+    <title>세계 가족 문화 성향 테스트 & 리듬게임</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <style>
+        :root { --page-bg-image: url("세계 가족 문화 성향 테스트 사진.png"); }
+        body { font-family: sans-serif; background: #f4f6f9; padding: 20px; text-align: center; margin: 0; height: 100vh; position: relative; overflow: hidden; box-sizing: border-box; display: flex; align-items: center; justify-content: center; }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: var(--page-bg-image) center / cover no-repeat;
+            opacity: 0.8;
+            z-index: -2;
+            transition: background-image 0.35s ease;
+        }
+        body::after {
+            content: "";
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.35);
+            z-index: -1;
+        }
+        .box { background: rgba(255, 255, 255, 0.9); width: 100%; max-width: 550px; max-height: calc(100vh - 40px); margin: 0 auto; padding: 22px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); box-sizing: border-box; backdrop-filter: blur(3px); overflow: hidden; }
+        .btn { background: #007bff; color: white; border: none; padding: 14px; width: 100%; border-radius: 8px; font-size: 16px; cursor: pointer; margin-top: 15px; font-weight: bold; display: block; text-decoration: none; }
+        .btn:hover { background: #0056b3; }
+        .opt-btn { background: #f8f9fa; border: 1px solid #ddd; padding: 14px; width: 100%; border-radius: 8px; text-align: left; margin-bottom: 12px; cursor: pointer; font-size: 14px; line-height: 1.4; box-sizing: border-box; display: block; }
+        .opt-btn:hover { background: #e9ecef; border-color: #007aff; color: #007aff; }
+        
+        /* 화면 전환 */
+        .page { display: none; }
+        .page.active { display: block !important; }
+        
+        .result-text { text-align: left; background: #f0f4f8; padding: 14px; border-radius: 8px; line-height: 1.38; font-size: 12px; border-left: 4px solid #007bff; white-space: pre-wrap; max-height: 172px; overflow: hidden; }
+        .music-tag { display: inline-block; background: #e3f2fd; color: #0d47a1; padding: 6px 10px; border-radius: 4px; font-size: 13px; font-weight: bold; margin-bottom: 10px; }
+        .progress { font-size: 13px; color: #888; margin-bottom: 10px; text-align: right; }
+
+        /* 국가 선택 드롭다운 스타일 */
+        .select-style {
+            width: 100%;
+            padding: 12px;
+            border-radius: 8px;
+            border: 2px solid #007bff;
+            background-color: #f8f9fa;
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            outline: none;
+            cursor: pointer;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            text-align-last: center;
+        }
+        .select-style:focus {
+            border-color: #0056b3;
+            background-color: #fff;
+        }
+        .country-flag {
+            margin: 2px 0 8px;
+        }
+        .country-flag img {
+            width: 116px;
+            height: 76px;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.18);
+        }
+
+        /* --- 리듬 게임 스타일 --- */
+        #game-area { margin-top: 20px; display: none; background: #111; padding: 15px; border-radius: 10px; position: relative; overflow: hidden; user-select: none; }
+        .game-header { display: flex; justify-content: space-between; color: white; margin-bottom: 8px; font-size: 14px; font-weight: bold; }
+        
+        /* 체력바 디자인 */
+        .hp-container { width: 100%; background: #333; height: 10px; border-radius: 5px; margin-bottom: 10px; overflow: hidden; border: 1px solid #444; }
+        .hp-bar { width: 100%; height: 100%; background: #2ed573; transition: width 0.1s ease, background-color 0.3s; }
+
+        #game-canvas-container { position: relative; width: 100%; height: 320px; background: #222; border-radius: 6px 6px 0 0; overflow: hidden; }
+        canvas { display: block; width: 100%; height: 100%; }
+        
+        /* 모바일 터치 패드 */
+        .touch-pads { display: flex; width: 100%; margin-top: 0; gap: 0; border-radius: 0 0 6px 6px; overflow: hidden; }
+        .pad { flex: 1; background: #2a2a2a; color: white; border: none; padding: 18px 0; font-weight: bold; font-size: 16px; cursor: pointer; -webkit-tap-highlight-color: transparent; border-top: 1px solid #444; }
+        .pad:active { background: #444; transform: scale(0.98); }
+        .pad.key-s { border-bottom: 4px solid #ff4757; }
+        .pad.key-d { border-bottom: 4px solid #2ed573; }
+        .pad.key-k { border-bottom: 4px solid #1e90ff; }
+        .pad.key-l { border-bottom: 4px solid #ffa502; }
+
+        /* 난이도 */
+        .diff-box { margin: 15px 0; display: flex; justify-content: center; gap: 10px; }
+        .diff-btn { background: #e0e0e0; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; font-weight: bold; font-size: 14px; }
+        .diff-btn.active { background: #222; color: white; }
+        #p3 h2 { margin: 0 0 12px; }
+        #p3 h3 { margin-bottom: 4px !important; }
+        #p3 hr { margin: 12px 0 !important; }
+        #p3 .btn { padding: 11px; margin-top: 8px !important; }
+        #p3 .diff-box { margin: 8px 0; }
+        #p3.game-mode #r-tag,
+        #p3.game-mode #country-flag,
+        #p3.game-mode #r-title,
+        #p3.game-mode #r-desc,
+        #p3.game-mode hr,
+        #p3.game-mode .rhythm-title,
+        #p3.game-mode .rhythm-help,
+        #p3.game-mode .diff-box,
+        #p3.game-mode #preview-btn {
+            display: none !important;
+        }
+        #p3.game-mode #game-canvas-container {
+            height: 300px;
+        }
+        #p3.game-mode #game-area {
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="box">
+    <div id="p1" class="page active" style="display:block;">
+        <h2>🌍 세계 가족 문화 성향 테스트</h2>
+        <p>총 10개의 질문을 통해 나의 가족 소통 성향을 분석하고, 전 세계 50개국 중 나와 가장 닮은 가족 문화와 대표 노래를 가진 나라를 찾아봅니다!</p>
+        <button class="btn" id="start-btn" onclick="forceStartTest()">테스트 시작하기</button>
+    </div>
+
+    <div id="p2" class="page" style="display:none;">
+        <div id="q-progress" class="progress"></div>
+        <h3 id="q-text" style="word-break: keep-all; font-size: 18px; color: #222; text-align: left;">질문</h3>
+        <div id="opt-box"></div>
+    </div>
+
+    <div id="p3" class="page" style="display:none;">
+        <h2>나와 닮은 가족 문화 국가는?</h2>
+        
+        <div style="margin-bottom: 15px; text-align: left;">
+            <label for="country-select" style="font-size: 14px; font-weight: bold; color: #555; display: block; margin-bottom: 6px;">👉 매칭된 그룹에서 상세 국가를 선택해 보세요:</label>
+            <select id="country-select" class="select-style"></select>
+        </div>
+
+        <div id="r-tag" class="music-tag"></div>
+        <div id="country-flag" class="country-flag" aria-label="선택한 국가 국기"></div>
+        <h3 id="r-title" style="color: #007bff; margin-top: 5px; font-size: 22px;"></h3>
+        <p id="r-desc" class="result-text"></p>
+        
+        <hr style="border: 0; height: 1px; background: #ddd; margin: 20px 0;">
+        
+        <h3 class="rhythm-title" style="margin-bottom: 5px;">🎵 대표 음악 리듬게임 플레이</h3>
+        <p class="rhythm-help" style="font-size: 13px; color: #666; margin-top: 0;">PC는 키보드(S, D, K, L), 모바일은 하단 버튼을 손가락으로 누르세요!</p>
+        
+        <div class="diff-box">
+            <button class="diff-btn active" onclick="setDifficulty('easy', this)">Easy</button>
+            <button class="diff-btn" onclick="setDifficulty('normal', this)">Normal</button>
+            <button class="diff-btn" onclick="setDifficulty('hard', this)">Hard</button>
+        </div>
+
+        <a class="btn" id="preview-btn" target="_blank" rel="noopener noreferrer" style="background: #ff0000; margin-top: 10px; width: 100%;">🔴 유튜브로 곡 미리듣기</a>
+        <button class="btn" id="game-start-btn" onclick="toggleRhythmGame()" style="background: #28a745; margin-top: 10px; width: 100%;">게임 시작하기</button>
+
+        <div id="game-area">
+            <div class="game-header">
+                <span id="game-song-name">노래 제목</span>
+                <span>Time: <span id="game-time">1:30</span> | Score: <span id="game-score">0</span></span>
+            </div>
+            
+            <div class="hp-container">
+                <div id="game-hp" class="hp-bar"></div>
+            </div>
+
+            <div id="game-canvas-container">
+                <canvas id="gameCanvas"></canvas>
+            </div>
+            <div class="touch-pads">
+                <button class="pad key-s" id="pad-0">S</button>
+                <button class="pad key-d" id="pad-1">D</button>
+                <button class="pad key-k" id="pad-2">K</button>
+                <button class="pad key-l" id="pad-3">L</button>
+            </div>
+        </div>
+
+        <button class="btn" id="restart-btn" onclick="goHome()" style="margin-top: 30px; width: 100%;">테스트 다시 하기</button>
+    </div>
+</div>
+
+<script>
+    // 🚨 핵심 수정: 스크립트 최상단에 화면 전환 함수를 배치하여 무조건 작동하도록 보장
+    function forceStartTest() {
+        try {
+            document.getElementById('p1').style.display = 'none';
+            document.getElementById('p2').style.display = 'block';
+            showQ();
+        } catch(e) {
+            alert("오류 발생: 다시 눌러주세요.");
+        }
+    }
+
+    const qList = [
+        { q: "1. 내가 생각하는 가장 이상적인 부모와 자녀의 관계는?", opts: [{ text: "부모님의 은혜에 보답하며 도리와 책임을 다하는 관계", type: "A" }, { text: "서로의 사생활을 존중하며 간섭하지 않는 독립적인 관계", type: "B" }, { text: "늘 질문과 대화를 주고받으며 함께 성장하는 파트너 관계", type: "C" }, { text: "온 친척까지 다 함께 끈끈하게 뭉치는 대가족 관계", type: "D" }] },
+        { q: "2. 명절이나 큰 기념일이 오면 부모님과 어떻게 보내고 싶나요?", opts: [{ text: "정성 가득한 선물이나 용돈을 챙겨드리고 예의를 갖춘다", type: "A" }, { text: "각자 편하게 쉬거나 간단한 안부 전화만 나눈다", type: "B" }, { text: "카페나 식탁에 앉아 인생 이야기를 길게 나눈다", type: "C" }, { text: "친척, 이웃들까지 다 불러 모아 시끌벅적하게 파티를 한다", type: "D" }] },
+        { q: "3. 부모님이 내 진로나 미래의 선택을 반대하신다면?", opts: [{ text: "부모님의 오랜 연륜과 의견을 진지하게 수용한다", type: "A" }, { text: "내 인생은 나의 것이므로 내 뜻대로 밀고 나간다", type: "B" }, { text: "왜 그렇게 생각하시는지 끝까지 토론하고 설득한다", type: "C" }, { text: "가족들이 서운하지 않게 감정을 잘 다독이며 조율한다", type: "D" }] },
+        { q: "4. 성인이 되어 독립한다면 부모님과의 물리적 거리는?", opts: [{ text: "부모님이 부르시면 언제든 바로 갈 수 있는 거리", type: "A" }, { text: "서로의 사생활이 완벽히 보장되는 먼 거리", type: "B" }, { text: "자주 교류하고 왕래할 수 있는 적당한 거리", type: "C" }, { text: "이웃집이나 한 건물처럼 대가족이 모여 사는 아주 가까운 거리", type: "D" }] },
+        { q: "5. 내가 가족에게서 가장 크게 얻고 싶은 에너지는 무엇인가요?", opts: [{ text: "삶의 중심을 잡아주는 책임감과 예의성", type: "A" }, { text: "나를 구속하지 않고 내 삶을 지지해주는 자유", type: "B" }, { text: "지적인 자극과 가치관을 정립해주는 깊은 대화", type: "C" }, { text: "언제나 내 편이 되어주는 가슴 뜨거운 정과 소속감", type: "D" }] },
+        { q: "6. 부모님의 생신날, 내가 가장 먼저 준비할 것은?", opts: [{ text: "감사의 마음을 담은 편지와 격식 있는 식사", type: "A" }, { text: "부모님이 평소 갖고 싶어 하셨던 실용적인 기프티콘", type: "B" }, { text: "부모님과 깊은 대화를 나눌 수 있는 호젓한 여행 계획", type: "C" }, { text: "온 동네나 친척들이 다 함께 모이는 성대한 잔치 상", type: "D" }] },
+        { q: "7. 가족 안에서 의견 충돌이나 말다툼이 생겼을 때 나의 행동은?", opts: [{ text: "윗사람의 뜻을 존중하여 내가 먼저 양보하고 참는다", type: "A" }, { text: "감정 소모를 피하기 위해 각자의 방으로 들어가 거리를 둔다", type: "B" }, { text: "서로의 주장에 논리적 허점이 없는지 조목조목 따져본다", type: "C" }, { text: "큰소리로 울고 웃으며 속마음을 다 털어놓고 금방 화해한다", type: "D" }] },
+        { q: "8. 내가 돈을 많이 벌게 되었을 때 가족을 위해 가장 하고 싶은 일은?", opts: [{ text: "부모님의 노후를 편안하게 보장해 드리는 생활비 지원", type: "A" }, { text: "가족 개개인이 꿈을 이룰 수 있도록 돕는 독립 자금 지원", type: "B" }, { text: "가족 교육재단을 만들거나 배움과 지식을 위한 자산 마련", type: "C" }, { text: "가족 모두가 평생 모여 살 수 있는 거대한 대저택 구입", type: "D" }] },
+        { q: "9. 주말에 부모님이 집안일을 도와달라고 하실 때 내 마음은?", opts: [{ text: "자식으로서 당연히 해야 할 의무라고 생각하고 즉시 돕는다", type: "A" }, { text: "내 개인 휴식 시간이나 계획을 먼저 배려해주길 바란다", type: "B" }, { text: "왜 이 일을 지금 해야 하는지 효율적인 방법을 먼저 의논한다", type: "C" }, { text: "음악을 크게 틀어놓고 가족들과 수다를 떨며 즐겁게 돕는다", type: "D" }] },
+        { q: "10. '가족'이라는 존재를 한 마디로 정의한다면?", opts: [{ text: "내가 평생 공경하고 지켜나가야 할 도덕적 울타리", type: "A" }, { text: "인생이라는 길을 나란히 걸어가는 독립된 친구들", type: "B" }, { text: "인생의 지혜와 올바른 가치관을 주고받는 최고의 배움터", type: "C" }, { text: "슬픔은 나누고 기쁨은 배가 되는 뜨거운 심장 같은 공동체", type: "D" }] }
+    ];
+
+    const countryGroups = {
+        A: {
+            groupName: "동양의 예의와 전통 효(孝) 중심 문화",
+            desc: "당신은 아시아권의 깊은 효 사상과 닮아 있습니다. 가족에 대한 헌신과 보답을 명예로운 미덕으로 여기며, 윗사람을 공경하고 도리를 다하는 책임감 있는 스타일입니다.",
+            countries: [{ name: "대한민국", song: "아리랑" }, { name: "베트남", song: "Lý Cây Đa" }, { name: "중국", song: "모리화" }, { name: "일본", song: "사쿠라 사쿠라" }, { name: "대만", song: "망춘풍" }]
+        },
+        B: {
+            groupName: "서구의 합리성과 상호 독립 존중 문화",
+            desc: "당신은 영미권 및 북유럽의 합리적인 가족 문화와 닮았습니다. 부모 자식 간이라도 개인의 사생활과 선택을 지켜주는 것이 진정한 존중이라 보며, 구속 없는 평등한 관계를 추구합니다.",
+            countries: [{ name: "미국", song: "Oh! Susanna" }, { name: "영국", song: "Greensleeves" }, { name: "캐나다", song: "붉은 강 골짜기" }, { name: "호주", song: "월칭 마틸다" }, { name: "독일", song: "로렐라이" }]
+        },
+        C: {
+            groupName: "하브루타식 깊은 소통과 가치 교감 문화",
+            desc: "당신은 지적인 소통과 정신적 가치를 유대감의 핵심으로 봅니다. 무조건적인 순종이나 차가운 독립보다는, 끊임없는 질문과 토론을 통해 서로 지혜를 나누는 밀도 높은 패밀리십을 선호합니다.",
+            countries: [{ name: "이스라엘", song: "하바 나길라" }, { name: "오스트리아", song: "에델바이스" }, { name: "폴란드", song: "쇼팽 마주르카" }, { name: "러시아", song: "Kalinka" }, { name: "튀르키예", song: "Üsküdar" }]
+        },
+        D: {
+            groupName: "라틴·지중해의 열정적인 대가족 공동체 문화",
+            desc: "당신은 남미와 남유럽 특유의 뜨거운 가족 중심주의와 닮았습니다. 나 혼자의 삶보다 온 친척이 왁자지껄 뭉쳐 감정을 교류하고, 서로 품어주는 끈끈한 정 속에서 행복을 느끼는 타입입니다.",
+            countries: [{ name: "이탈리아", song: "Santa Lucia" }, { name: "스페인", song: "El Vito" }, { name: "멕시코", song: "La Cucaracha" }, { name: "브라질", song: "Cai Cai Balão" }, { name: "케냐", song: "하쿠나 마타타" }]
+        }
+    };
+
+    const countryFlagImages = {
+        "대한민국": "flags/kr.svg",
+        "베트남": "flags/vn.svg",
+        "중국": "flags/cn.svg",
+        "일본": "flags/jp.svg",
+        "대만": "flags/tw.svg",
+        "미국": "flags/us.svg",
+        "영국": "flags/gb.svg",
+        "캐나다": "flags/ca.svg",
+        "호주": "flags/au.svg",
+        "독일": "flags/de.svg",
+        "이스라엘": "flags/il.svg",
+        "오스트리아": "flags/at.svg",
+        "폴란드": "flags/pl.svg",
+        "러시아": "flags/ru.svg",
+        "튀르키예": "flags/tr.svg",
+        "이탈리아": "flags/it.svg",
+        "스페인": "flags/es.svg",
+        "멕시코": "flags/mx.svg",
+        "브라질": "flags/br.svg",
+        "케냐": "flags/ke.svg"
+    };
+
+    const songYoutubeQueries = {
+        "아리랑": "Arirang Korean folk song",
+        "Lý Cây Đa": "Lý Cây Đa Vietnamese folk song",
+        "모리화": "Mo Li Hua Chinese folk song",
+        "사쿠라 사쿠라": "Sakura Sakura Japanese folk song",
+        "망춘풍": "Wang Chun Feng Taiwanese folk song",
+        "Oh! Susanna": "Oh Susanna American folk song",
+        "Greensleeves": "Greensleeves English folk song",
+        "붉은 강 골짜기": "Red River Valley folk song",
+        "월칭 마틸다": "Waltzing Matilda Australian folk song",
+        "로렐라이": "Lorelei German folk song",
+        "하바 나길라": "Hava Nagila Israeli folk song",
+        "에델바이스": "Edelweiss Austrian song",
+        "쇼팽 마주르카": "Chopin Mazurka Polish music",
+        "Kalinka": "Kalinka Russian folk song",
+        "Üsküdar": "Üsküdar Turkish folk song",
+        "Santa Lucia": "Santa Lucia Italian song",
+        "El Vito": "El Vito Spanish folk song",
+        "La Cucaracha": "La Cucaracha Mexican folk song",
+        "Cai Cai Balão": "Cai Cai Balão Brazilian folk song",
+        "하쿠나 마타타": "Hakuna Matata Kenya song"
+    };
+
+    function getYoutubeSearchLink(songName) {
+        const query = songYoutubeQueries[songName] || songName;
+        return "https://www.youtube.com/results?search_query=" + encodeURIComponent(query);
+    }
+
+    const songDescriptions = {
+        "아리랑": "한국을 대표하는 민요로, 이별과 그리움, 삶의 애틋함을 담고 있습니다. 지역마다 다른 변주가 있어 한국 가족문화의 정서와 공동체 기억을 느낄 수 있는 곡입니다.",
+        "Lý Cây Đa": "베트남 북부 민요 계열의 노래로, 마을과 자연, 사람들의 만남을 밝고 서정적으로 표현합니다. 가족과 이웃이 함께 어울리는 베트남식 공동체 감각을 떠올리게 합니다.",
+        "모리화": "중국의 대표 민요로, 재스민 꽃의 아름다움을 통해 우아하고 부드러운 정서를 전합니다. 절제된 선율 속에 가족과 전통을 소중히 여기는 분위기가 잘 어울립니다.",
+        "사쿠라 사쿠라": "일본의 봄과 벚꽃을 상징하는 전통 선율입니다. 고요하고 단정한 멜로디가 계절감, 예절, 섬세한 감수성을 드러냅니다.",
+        "Oh! Susanna": "미국의 대중적인 민요로, 개척시대의 활기와 낙천적인 분위기를 담고 있습니다. 자유롭고 직접적인 표현이 미국식 독립성과 밝은 에너지를 보여줍니다.",
+        "Greensleeves": "영국 전통 선율로 널리 알려진 곡이며, 차분하고 품격 있는 분위기가 특징입니다. 오래된 이야기와 예술적 감수성이 영국 문화의 안정감과 잘 어울립니다.",
+        "Kalinka": "러시아를 대표하는 빠르고 힘찬 민요입니다. 점점 고조되는 리듬이 러시아 특유의 열정, 생명력, 공동체적 흥을 강하게 보여줍니다.",
+        "Üsküdar": "튀르키예의 전통적인 도시 정서를 담은 노래로, 동서양 문화가 만나는 분위기를 느낄 수 있습니다. 부드러운 선율 속에 가족과 일상의 이야기가 녹아 있습니다.",
+        "Santa Lucia": "이탈리아 나폴리 지역과 관련 깊은 서정적인 노래입니다. 바다와 밤 풍경을 떠올리게 하는 선율이 따뜻하고 낭만적인 가족 정서와 잘 맞습니다.",
+        "El Vito": "스페인 안달루시아 지역의 민속적 색채가 강한 노래입니다. 빠른 리듬과 강한 표현이 스페인의 열정, 춤, 축제 문화를 떠올리게 합니다.",
+        "La Cucaracha": "멕시코를 대표하는 흥겨운 민요로, 익살스럽고 반복적인 선율이 특징입니다. 가족과 이웃이 함께 웃고 노래하는 활기찬 분위기를 잘 담고 있습니다.",
+        "Cai Cai Balão": "브라질의 어린이 노래로 알려져 있으며, 밝고 가벼운 선율이 특징입니다. 놀이와 축제, 가족이 함께 즐기는 브라질의 따뜻한 생활감을 느낄 수 있습니다."
+    };
+
+    const songMelodies = {
+        "아리랑": [{ f: 293, d: 2 }, { f: 329, d: 2 }, { f: 392, d: 4 }, { f: 440, d: 2 }, { f: 392, d: 2 }, { f: 440, d: 4 }, { f: 392, d: 2 }, { f: 329, d: 2 }, { f: 293, d: 4 }, { f: 329, d: 2 }, { f: 293, d: 2 }, { f: 220, d: 4 }],
+        "똠응우옌": [{ f: 329, d: 3 }, { f: 392, d: 3 }, { f: 440, d: 3 }, { f: 523, d: 3 }, { f: 587, d: 6 }, { f: 523, d: 3 }, { f: 440, d: 3 }],
+        "모리화": [{ f: 329, d: 2 }, { f: 329, d: 2 }, { f: 392, d: 2 }, { f: 440, d: 2 }, { f: 523, d: 4 }, { f: 440, d: 2 }, { f: 392, d: 2 }, { f: 329, d: 4 }],
+        "사쿠라 사쿠라": [{ f: 440, d: 4 }, { f: 440, d: 4 }, { f: 494, d: 8 }, { f: 440, d: 4 }, { f: 440, d: 4 }, { f: 494, d: 8 }, { f: 440, d: 4 }, { f: 494, d: 4 }, { f: 523, d: 4 }],
+        "망춘풍": [{ f: 392, d: 4 }, { f: 440, d: 2 }, { f: 392, d: 2 }, { f: 329, d: 4 }, { f: 293, d: 4 }, { f: 261, d: 8 }],
+        "홈 온 더 레인지": [{ f: 293, d: 2 }, { f: 293, d: 2 }, { f: 349, d: 2 }, { f: 392, d: 2 }, { f: 440, d: 4 }, { f: 392, d: 2 }, { f: 349, d: 2 }, { f: 293, d: 6 }],
+        "대니 보이": [{ f: 293, d: 2 }, { f: 370, d: 2 }, { f: 392, d: 2 }, { f: 370, d: 2 }, { f: 392, d: 4 }, { f: 440, d: 2 }, { f: 494, d: 4 }, { f: 440, d: 2 }, { f: 392, d: 2 }, { f: 370, d: 2 }, { f: 293, d: 4 }],
+        "붉은 강 골짜기": [{ f: 261, d: 4 }, { f: 329, d: 2 }, { f: 392, d: 2 }, { f: 523, d: 4 }, { f: 523, d: 2 }, { f: 494, d: 2 }, { f: 440, d: 4 }],
+        "월칭 마틸다": [{ f: 261, d: 2 }, { f: 329, d: 2 }, { f: 392, d: 2 }, { f: 523, d: 4 }, { f: 440, d: 4 }, { f: 392, d: 2 }, { f: 349, d: 2 }, { f: 293, d: 4 }],
+        "로렐라이": [{ f: 392, d: 3 }, { f: 329, d: 3 }, { f: 392, d: 3 }, { f: 523, d: 6 }, { f: 494, d: 3 }, { f: 440, d: 3 }, { f: 392, d: 6 }],
+        "하바 나길라": [{ f: 293, d: 2 }, { f: 293, d: 2 }, { f: 370, d: 4 }, { f: 370, d: 4 }, { f: 349, d: 2 }, { f: 293, d: 2 }, { f: 349, d: 4 }],
+        "에델바이스": [{ f: 329, d: 4 }, { f: 392, d: 2 }, { f: 587, d: 6 }, { f: 523, d: 4 }, { f: 392, d: 2 }, { f: 349, d: 6 }, { f: 329, d: 4 }, { f: 329, d: 2 }, { f: 329, d: 2 }, { f: 349, d: 2 }, { f: 392, d: 2 }, { f: 440, d: 6 }],
+        "쇼팽 마주르카": [{ f: 392, d: 3 }, { f: 494, d: 3 }, { f: 587, d: 3 }, { f: 659, d: 6 }, { f: 587, d: 3 }, { f: 494, d: 3 }],
+        "카튜샤": [{ f: 220, d: 4 }, { f: 247, d: 2 }, { f: 262, d: 4 }, { f: 294, d: 2 }, { f: 330, d: 4 }, { f: 330, d: 2 }, { f: 294, d: 2 }, { f: 262, d: 4 }],
+        "위스퀴다르": [{ f: 293, d: 3 }, { f: 311, d: 3 }, { f: 370, d: 3 }, { f: 392, d: 6 }, { f: 370, d: 3 }, { f: 311, d: 3 }, { f: 293, d: 6 }],
+        "오 솔레 미오": [{ f: 494, d: 4 }, { f: 440, d: 2 }, { f: 392, d: 2 }, { f: 370, d: 4 }, { f: 392, d: 2 }, { f: 440, d: 2 }, { f: 392, d: 4 }, { f: 349, d: 4 }, { f: 293, d: 8 }],
+        "에스파냐 카니": [{ f: 440, d: 2 }, { f: 415, d: 2 }, { f: 440, d: 2 }, { f: 494, d: 2 }, { f: 523, d: 4 }, { f: 494, d: 2 }, { f: 440, d: 2 }, { f: 415, d: 4 }],
+        "라 밤바": [{ f: 261, d: 2 }, { f: 329, d: 2 }, { f: 392, d: 4 }, { f: 440, d: 2 }, { f: 349, d: 2 }, { f: 392, d: 4 }],
+        "이파네마에서 온 소녀": [{ f: 349, d: 4 }, { f: 392, d: 4 }, { f: 349, d: 4 }, { f: 293, d: 4 }, { f: 349, d: 4 }, { f: 392, d: 4 }],
+        "하쿠나 마타타": [{ f: 261, d: 2 }, { f: 293, d: 2 }, { f: 329, d: 4 }, { f: 392, d: 4 }, { f: 440, d: 2 }, { f: 392, d: 2 }, { f: 523, d: 4 }],
+        "default": [{ f: 261, d: 3 }, { f: 293, d: 3 }, { f: 329, d: 3 }, { f: 349, d: 3 }, { f: 392, d: 3 }, { f: 440, d: 3 }, { f: 494, d: 3 }, { f: 523, d: 3 }]
+    };
+    songMelodies["Lý Cây Đa"] = songMelodies["똠응우옌"];
+    songMelodies["Oh! Susanna"] = songMelodies["홈 온 더 레인지"];
+    songMelodies["Greensleeves"] = songMelodies["대니 보이"];
+    songMelodies["Kalinka"] = songMelodies["카튜샤"];
+    songMelodies["Üsküdar"] = songMelodies["위스퀴다르"];
+    songMelodies["Santa Lucia"] = songMelodies["오 솔레 미오"];
+    songMelodies["El Vito"] = songMelodies["에스파냐 카니"];
+    songMelodies["La Cucaracha"] = songMelodies["라 밤바"];
+    songMelodies["Cai Cai Balão"] = songMelodies["이파네마에서 온 소녀"];
+
+    let idx = 0;
+    let score = { A:0, B:0, C:0, D:0 };
+    let currentSelectedSong = "";
+
+    let canvas, ctx;
+    let gameAnimationId;
+    let gameRunning = false;
+    let gameScore = 0;
+    let gameHp = 100;
+    let difficulty = 'easy';
+    
+    const diffSettings = {
+        easy: { speed: 4.0, durationMs: 30000, density: 2 },
+        normal: { speed: 6.0, durationMs: 45000, density: 1 },
+        hard: { speed: 8.5, durationMs: 60000, density: 1 }
+    };
+
+    let notes = [];
+    let rhythmChart = [];
+    let rhythmChartIndex = 0;
+    let currentGameDuration = 90000;
+    const laneCount = 4;
+    let keyState = [false, false, false, false];
+    let judgmentText = "";
+    let judgmentTimer = 0;
+    let audioCtx = null;
+    
+    let gameStartTime = 0;
+    const GAME_DURATION = 90000;
+    let isFinished = false;
+
+    let bgmActive = false;
+    let bgmIndex = 0;
+    let bgmTimeouts = [];
+
+    function getMelodyStepMs(noteData) {
+        return ((noteData.d * 10) / 60 + 0.05) * 1000;
+    }
+
+    function getLaneForMelodyNote(noteData, noteIndex, diff) {
+        if (diff === 'easy') {
+            return noteData.f < 380 ? 0 : 3;
+        }
+        if (diff === 'normal') {
+            return (Math.round(noteData.f / 55) + noteIndex) % laneCount;
+        }
+        return (Math.round(noteData.f / 35) + noteIndex * 2) % laneCount;
+    }
+
+    function buildRhythmChart(songName, diff) {
+        const melody = songMelodies[songName] || songMelodies["default"];
+        const settings = diffSettings[diff];
+        const chart = [];
+        let hitTime = 900;
+        let melodyIndex = 0;
+
+        while (hitTime < settings.durationMs - 1200) {
+            const noteData = melody[melodyIndex % melody.length];
+            const stepMs = getMelodyStepMs(noteData);
+            const shouldPlaceNote = diff !== 'easy' || melodyIndex % settings.density === 0;
+
+            if (shouldPlaceNote) {
+                const lane = getLaneForMelodyNote(noteData, melodyIndex, diff);
+                chart.push({ hitTime, lane, freq: noteData.f });
+
+                if (diff === 'hard' && stepMs > 420) {
+                    chart.push({
+                        hitTime: hitTime + Math.min(stepMs * 0.52, 320),
+                        lane: (lane + 1 + (melodyIndex % 2)) % laneCount,
+                        freq: noteData.f
+                    });
+                }
+            }
+
+            hitTime += stepMs;
+            melodyIndex++;
+        }
+
+        chart.sort((a, b) => a.hitTime - b.hitTime);
+        return chart;
+    }
+
+    // 오디오 관련 코드는 오직 3페이지(리듬게임)에서만 초기화되도록 격리
+    function initAudio() {
+        try {
+            if (!audioCtx) {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (AudioContext) {
+                    audioCtx = new AudioContext();
+                }
+            }
+            if (audioCtx && audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+        } catch (e) {
+            console.warn("오디오 지원하지 않음:", e);
+        }
+    }
+
+    // 터치 패드 및 게임 이벤트 연결 (HTML 로드 완료 후 실행)
+    window.addEventListener('DOMContentLoaded', function() {
+        window.addEventListener('keydown', handleKeyDown);
+        window.addEventListener('keyup', handleKeyUp);
+
+        for (let i = 0; i < 4; i++) {
+            const pad = document.getElementById("pad-" + i);
+            if(pad) {
+                pad.addEventListener('touchstart', function(e) { 
+                    e.preventDefault(); 
+                    initAudio(); 
+                    pressLane(i); 
+                });
+                pad.addEventListener('mousedown', function(e) { 
+                    e.preventDefault(); 
+                    initAudio(); 
+                    pressLane(i); 
+                });
+            }
+        }
+    });
+
+    function playTone(freq, type, duration, volume = 0.15) {
+        if (!audioCtx) return;
+        try {
+            let osc = audioCtx.createOscillator();
+            let gainNode = audioCtx.createGain();
+            osc.type = type;
+            osc.frequency.value = freq;
+            gainNode.gain.setValueAtTime(volume, audioCtx.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+            osc.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + duration);
+        } catch(e) {}
+    }
+
+    function startBgm() {
+        bgmActive = true;
+        bgmIndex = 0;
+        const firstBeatDelay = rhythmChart.length ? rhythmChart[0].hitTime : 900;
+        let t = setTimeout(playBgmStep, firstBeatDelay);
+        bgmTimeouts.push(t);
+    }
+
+    function playBgmStep() {
+        if (!gameRunning || !bgmActive) return;
+
+        const currentMelodyList = songMelodies[currentSelectedSong] || songMelodies["default"];
+        const noteData = currentMelodyList[bgmIndex % currentMelodyList.length];
+        
+        let playFreq = noteData.f;
+        let durationSec = (noteData.d * 10) / 60;
+
+        playTone(playFreq, 'sine', durationSec, 0.08);
+
+        bgmIndex++;
+        
+        let nextDelayMs = (durationSec + 0.05) * 1000;
+        let t = setTimeout(playBgmStep, nextDelayMs);
+        bgmTimeouts.push(t);
+    }
+
+    function stopBgm() {
+        bgmActive = false;
+        bgmTimeouts.forEach(t => clearTimeout(t));
+        bgmTimeouts = [];
+    }
+
+    function showQ() {
+        if(idx >= qList.length) {
+            showR();
+            return;
+        }
+        document.getElementById('q-progress').innerText = (idx + 1) + " / " + qList.length;
+        
+        let item = qList[idx];
+        document.getElementById('q-text').innerText = item.q;
+        let box = document.getElementById('opt-box');
+        box.innerHTML = '';
+        
+        item.opts.forEach(opt => {
+            let b = document.createElement('button');
+            b.className = 'opt-btn';
+            b.innerText = opt.text;
+            b.onclick = function() {
+                score[opt.type]++;
+                idx++;
+                showQ();
+            };
+            box.appendChild(b);
+        });
+    }
+
+    function showR() {
+        document.getElementById('p2').style.display = 'none';
+        document.getElementById('p3').style.display = 'block';
+        
+        let maxT = 'A';
+        let maxS = -1;
+        for(let t in score) {
+            if(score[t] > maxS) { maxS = score[t]; maxT = t; }
+        }
+        
+        let group = countryGroups[maxT];
+
+        const selector = document.getElementById('country-select');
+        selector.innerHTML = '';
+
+        group.countries.forEach((country, index) => {
+            let opt = document.createElement('option');
+            opt.value = index;
+            opt.innerText = country.name + " (" + country.song + ")";
+            selector.appendChild(opt);
+        });
+
+        selector.onchange = function() {
+            let selectedIndex = this.value;
+            let selectedCountry = group.countries[selectedIndex];
+            updateSelectedCountryDetails(group, selectedCountry);
+        };
+
+        updateSelectedCountryDetails(group, group.countries[0]);
+    }
+
+    function updateSelectedCountryDetails(group, country) {
+        if (gameRunning) {
+            stopRhythmGame();
+        }
+
+        currentSelectedSong = country.song;
+        const selectedFlagImage = countryFlagImages[country.name] || "세계 가족 문화 성향 테스트 사진.png";
+        document.documentElement.style.setProperty('--page-bg-image', 'url("' + selectedFlagImage + '")');
+        document.getElementById('r-tag').innerText = "🎵 대표 노래: '" + currentSelectedSong + "'";
+        document.getElementById('country-flag').innerHTML = '<img src="' + selectedFlagImage + '" alt="' + country.name + ' 국기">';
+        document.getElementById('r-title').innerText = country.name + " (" + group.groupName + ")";
+        
+        let countryListText = group.countries.map(c => c.name).join(', ');
+        const songDescription = songDescriptions[currentSelectedSong] || "이 곡은 해당 국가의 문화적 분위기를 느낄 수 있는 대표 음악으로, 결과 유형의 정서와 함께 감상할 수 있습니다.";
+        document.getElementById('r-desc').innerText = group.desc + "\n\n이 유형에 속하는 전 세계 대표 국가들로는 [" + countryListText + "] 등이 있으며, 당신의 소통 방식은 특히 '" + country.name + "'의 유대 문화와 깊은 연관이 있습니다.\n\n🎼 대표곡 설명: " + songDescription;
+        
+        document.getElementById('game-song-name').innerText = "🎧 음악 연주 중: " + currentSelectedSong;
+
+        const previewBtn = document.getElementById('preview-btn');
+        const targetLink = getYoutubeSearchLink(currentSelectedSong);
+        previewBtn.setAttribute('href', targetLink);
+        previewBtn.innerText = "🔴 유튜브에서 '" + currentSelectedSong + "' 검색하기";
+    }
+
+    function goHome() {
+        stopRhythmGame();
+        idx = 0;
+        score = { A:0, B:0, C:0, D:0 };
+        document.documentElement.style.setProperty('--page-bg-image', 'url("세계 가족 문화 성향 테스트 사진.png")');
+        document.getElementById('p3').style.display = 'none';
+        document.getElementById('p1').style.display = 'block';
+    }
+
+    function setDifficulty(diff, element) {
+        difficulty = diff;
+        const buttons = document.querySelectorAll('.diff-btn');
+        buttons.forEach(btn => btn.classList.remove('active'));
+        if (element) {
+            element.classList.add('active');
+        }
+    }
+
+    function toggleRhythmGame() {
+        initAudio(); // 게임을 시작할 때 비로소 오디오 엔진 활성화 시도
+        
+        const gameArea = document.getElementById('game-area');
+        const startBtn = document.getElementById('game-start-btn');
+        
+        if (!gameRunning) {
+            document.getElementById('p3').classList.add('game-mode');
+            gameArea.style.display = 'block';
+            startBtn.innerText = "게임 종료하기";
+            startBtn.style.background = "#dc3545";
+            initGame();
+        } else {
+            stopRhythmGame();
+        }
+    }
+
+    function stopRhythmGame() {
+        gameRunning = false;
+        stopBgm(); 
+        cancelAnimationFrame(gameAnimationId);
+        document.getElementById('p3').classList.remove('game-mode');
+        document.getElementById('game-area').style.display = 'none';
+        const startBtn = document.getElementById('game-start-btn');
+        if(startBtn) {
+            startBtn.innerText = "게임 시작하기";
+            startBtn.style.background = "#28a745";
+        }
+    }
+
+    function initGame() {
+        canvas = document.getElementById('gameCanvas');
+        ctx = canvas.getContext('2d');
+        canvas.width = canvas.parentElement.clientWidth || 500;
+        canvas.height = canvas.parentElement.clientHeight || 300;
+        gameScore = 0;
+        gameHp = 100;
+        isFinished = false;
+        gameStartTime = Date.now();
+
+        document.getElementById('game-score').innerText = gameScore;
+        updateHpBar();
+        notes = [];
+        rhythmChart = buildRhythmChart(currentSelectedSong, difficulty);
+        rhythmChartIndex = 0;
+        currentGameDuration = (rhythmChart.length ? rhythmChart[rhythmChart.length - 1].hitTime : diffSettings[difficulty].durationMs) + 2500;
+        judgmentText = "";
+        gameRunning = true;
+        
+        startBgm(); 
+        gameLoop();
+    }
+
+    function updateHpBar() {
+        const hpBar = document.getElementById('game-hp');
+        if (hpBar) {
+            hpBar.style.width = gameHp + "%";
+            if (gameHp > 50) {
+                hpBar.style.background = "#2ed573";
+            } else if (gameHp > 20) {
+                hpBar.style.background = "#ffa502";
+            } else {
+                hpBar.style.background = "#ff4757";
+            }
+        }
+    }
+
+    function gameLoop() {
+        if (!gameRunning) return;
+        updateGame();
+        if (gameRunning) { 
+            drawGame();
+            gameAnimationId = requestAnimationFrame(gameLoop);
+        }
+    }
+
+    function updateGame() {
+        const settings = diffSettings[difficulty];
+        
+        const elapsed = Date.now() - gameStartTime;
+        const remaining = Math.max(0, currentGameDuration - elapsed);
+        
+        const min = Math.floor(remaining / 60000);
+        const sec = Math.floor((remaining % 60000) / 1000);
+        document.getElementById('game-time').innerText = min + ":" + (sec < 10 ? "0" + sec : sec);
+
+        const judgeLineY = canvas.height - 20;
+        const travelMs = (judgeLineY / settings.speed / 60) * 1000;
+        while (rhythmChartIndex < rhythmChart.length && elapsed >= rhythmChart[rhythmChartIndex].hitTime - travelMs) {
+            const chartNote = rhythmChart[rhythmChartIndex];
+            notes.push({
+                lane: chartNote.lane,
+                y: 0,
+                width: canvas.width / laneCount,
+                height: 18,
+                hitTime: chartNote.hitTime,
+                freq: chartNote.freq
+            });
+            rhythmChartIndex++;
+        }
+        
+        for (let i = notes.length - 1; i >= 0; i--) {
+            notes[i].y += settings.speed;
+            
+            if (notes[i].y > canvas.height) {
+                notes.splice(i, 1);
+                showJudgment("MISS");
+                
+                gameHp -= 4; 
+                if (gameHp < 0) gameHp = 0;
+                updateHpBar();
+                
+                if (gameHp <= 0) {
+                    gameRunning = false;
+                    stopBgm();
+                    setTimeout(() => {
+                        alert("💥 GAME OVER!\n체력이 모두 소진되었습니다.\n최종 점수: " + gameScore);
+                        stopRhythmGame();
+                    }, 100);
+                    return;
+                }
+            }
+        }
+
+        if (elapsed >= currentGameDuration && notes.length === 0 && !isFinished) {
+            isFinished = true;
+            gameRunning = false;
+            stopBgm();
+            setTimeout(() => {
+                alert("🎉 음악 완주 성공!\n" + currentSelectedSong + " 연주를 끝까지 마무리했습니다!\n최종 점수: " + gameScore);
+                stopRhythmGame();
+            }, 500);
+        }
+
+        if (judgmentTimer > 0) judgmentTimer--;
+    }
+
+    function drawGame() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const laneWidth = canvas.width / laneCount;
+        const judgeLineY = canvas.height - 20; 
+        
+        ctx.strokeStyle = "#333";
+        ctx.lineWidth = 2;
+        for (let i = 1; i < laneCount; i++) {
+            ctx.beginPath();
+            ctx.moveTo(i * laneWidth, 0);
+            ctx.lineTo(i * laneWidth, canvas.height);
+            ctx.stroke();
+        }
+        
+        ctx.strokeStyle = "#007aff";
+        ctx.lineWidth = 8; 
+        ctx.beginPath();
+        ctx.moveTo(0, judgeLineY);
+        ctx.lineTo(canvas.width, judgeLineY);
+        ctx.stroke();
+        
+        for(let i=0; i<laneCount; i++) {
+            if(keyState[i]) {
+                ctx.fillStyle = "rgba(0, 122, 255, 0.25)";
+                ctx.fillRect(i * laneWidth, 0, laneWidth, canvas.height);
+            }
+        }
+
+        const noteColors = ["#ff4757", "#2ed573", "#1e90ff", "#ffa502"];
+        notes.forEach(note => {
+            ctx.fillStyle = noteColors[note.lane];
+            ctx.fillRect(note.lane * laneWidth + 6, note.y, laneWidth - 12, note.height);
+        });
+        
+        if (judgmentTimer > 0) {
+            ctx.font = "bold 26px sans-serif";
+            if (judgmentText === "PERFECT") ctx.fillStyle = "#2ed573";
+            else if (judgmentText === "GOOD") ctx.fillStyle = "#ffa502";
+            else ctx.fillStyle = "#ff4757";
+            ctx.textAlign = "center";
+            ctx.fillText(judgmentText, canvas.width / 2, canvas.height / 2);
+        }
+    }
+
+    function handleKeyDown(e) {
+        if (!gameRunning) return;
+        if (e.key === 's' || e.key === 'S') pressLane(0);
+        if (e.key === 'd' || e.key === 'D') pressLane(1);
+        if (e.key === 'k' || e.key === 'K') pressLane(2);
+        if (e.key === 'l' || e.key === 'L') pressLane(3);
+    }
+
+    function handleKeyUp(e) {
+        if (!gameRunning) return;
+        if (e.key === 's' || e.key === 'S') keyState[0] = false;
+        if (e.key === 'd' || e.key === 'D') keyState[1] = false;
+        if (e.key === 'k' || e.key === 'K') keyState[2] = false;
+        if (e.key === 'l' || e.key === 'L') keyState[3] = false;
+    }
+
+    function pressLane(laneIndex) {
+        if (!gameRunning) return;
+        keyState[laneIndex] = true;
+        setTimeout(() => { keyState[laneIndex] = false; }, 80);
+
+        const judgeLineY = canvas.height - 20;
+        let hit = false;
+        
+        const hitFreqs = [523.25, 587.33, 659.25, 783.99]; 
+
+        for (let i = 0; i < notes.length; i++) {
+            if (notes[i].lane === laneIndex) {
+                let noteCenter = notes[i].y + notes[i].height / 2;
+                let distance = Math.abs(noteCenter - judgeLineY);
+                let timingDiff = Math.abs((Date.now() - gameStartTime) - notes[i].hitTime);
+                
+                if (distance < 28 && timingDiff < 230) {
+                    hit = true;
+                    const hitFreq = notes[i].freq || hitFreqs[laneIndex];
+
+                    if (distance < 12 && timingDiff < 130) {
+                        showJudgment("PERFECT");
+                        gameScore += 100;
+                        gameHp = Math.min(100, gameHp + 6); 
+                        updateHpBar();
+                        playTone(hitFreq, 'triangle', 0.16, 0.2); 
+                    } 
+                    else {
+                        showJudgment("GOOD");
+                        gameScore += 50;
+                        gameHp = Math.min(100, gameHp + 3); 
+                        updateHpBar();
+                        playTone(hitFreq, 'triangle', 0.11, 0.12);
+                    }
+                    notes.splice(i, 1);
+                    break;
+                }
+            }
+        }
+        
+        if (!hit) {
+            playTone(130, 'sawtooth', 0.08, 0.15); 
+        }
+        document.getElementById('game-score').innerText = gameScore;
+    }
+
+    function showJudgment(text) {
+        judgmentText = text;
+        judgmentTimer = 25;
+    }
+</script>
+</body>
+</html>
