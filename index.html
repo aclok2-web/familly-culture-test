@@ -480,6 +480,11 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
     gameAudio.preload = 'auto';
     let audioRunId = 0;
     function musicTimeMs() { return gameAudio.currentTime * 1000; }
+    function getNoteSize(laneWidth) { return Math.min(92, laneWidth * .67) * 2; }
+    function getJudgeLineY() {
+        const radius = Math.min(getNoteSize(canvas.width / laneCount) * .35, canvas.width / laneCount * .44);
+        return canvas.height - radius - 12;
+    }
     function drawCountryNote(note,laneWidth) {
         const index = countryNoteIndices[currentSelectedCountry] || 0;
         const col=index%5,row=Math.floor(index/5);
@@ -487,7 +492,7 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
         const sw=countryNoteAtlas.naturalWidth/5;
         const sy=countryNoteAtlas.naturalHeight*bands[row][0];
         const sh=countryNoteAtlas.naturalHeight*(bands[row][1]-bands[row][0]);
-        const size=Math.min(92,laneWidth*.67);
+        const size=getNoteSize(laneWidth);
         const x=note.lane*laneWidth+laneWidth/2,y=note.y;
         ctx.save();
         ctx.shadowColor=['#ff4757','#2ed573','#1e90ff','#ffa502'][note.lane];ctx.shadowBlur=12;
@@ -1038,7 +1043,7 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
         const sec = Math.floor((remaining % 60000) / 1000);
         document.getElementById('game-time').innerText = min + ":" + (sec < 10 ? "0" + sec : sec);
 
-        const judgeLineY = canvas.height - 20;
+        const judgeLineY = getJudgeLineY();
         const travelMs = (judgeLineY / settings.speed / 60) * 1000;
         while (rhythmChartIndex < rhythmChart.length && elapsed >= rhythmChart[rhythmChartIndex].hitTime - travelMs) {
             const chartNote = rhythmChart[rhythmChartIndex];
@@ -1113,7 +1118,7 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
     function drawGame() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         const laneWidth = canvas.width / laneCount;
-        const judgeLineY = canvas.height - 20; 
+        const judgeLineY = getJudgeLineY(); 
         
         ctx.strokeStyle = "#333";
         ctx.lineWidth = 2;
@@ -1124,12 +1129,23 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
             ctx.stroke();
         }
         
-        ctx.strokeStyle = "#007aff";
-        ctx.lineWidth = 8; 
-        ctx.beginPath();
-        ctx.moveTo(0, judgeLineY);
-        ctx.lineTo(canvas.width, judgeLineY);
-        ctx.stroke();
+        const receptorColors = ["#ff4757", "#2ed573", "#1e90ff", "#ffa502"];
+        const receptorRadius = Math.min(getNoteSize(laneWidth) * .35, laneWidth * .44);
+        for (let i = 0; i < laneCount; i++) {
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(i * laneWidth + laneWidth / 2, judgeLineY, receptorRadius, 0, Math.PI * 2);
+            ctx.fillStyle = keyState[i] ? receptorColors[i] : "rgba(255,255,255,0.10)";
+            ctx.globalAlpha = keyState[i] ? .65 : 1;
+            ctx.fill();
+            ctx.globalAlpha = 1;
+            ctx.strokeStyle = receptorColors[i];
+            ctx.lineWidth = keyState[i] ? 7 : 4;
+            ctx.shadowColor = receptorColors[i];
+            ctx.shadowBlur = keyState[i] ? 22 : 8;
+            ctx.stroke();
+            ctx.restore();
+        }
         
         for(let i=0; i<laneCount; i++) {
             if(keyState[i]) {
@@ -1185,7 +1201,7 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
         if (!gameRunning) return;
         keyState[laneIndex] = true;
 
-        const judgeLineY = canvas.height - 20;
+        const judgeLineY = getJudgeLineY();
         let hit = false;
         
         const hitFreqs = [523.25, 587.33, 659.25, 783.99]; 
