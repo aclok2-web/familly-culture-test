@@ -33,7 +33,7 @@
         .page { display: none; }
         .page.active { display: block !important; }
         
-        .result-text { text-align: left; background: #f0f4f8; padding: 14px; border-radius: 8px; line-height: 1.38; font-size: 12px; border-left: 4px solid #007bff; white-space: pre-wrap; max-height: 172px; overflow: hidden; }
+        .result-text { text-align: left; background: #f0f4f8; padding: 14px; border-radius: 8px; line-height: 1.55; font-size: 12px; border-left: 4px solid #007bff; white-space: pre-wrap; max-height: 230px; overflow-y: auto; }
         .music-tag { display: inline-block; background: #e3f2fd; color: #0d47a1; padding: 6px 10px; border-radius: 4px; font-size: 13px; font-weight: bold; margin-bottom: 10px; }
         .progress { font-size: 13px; color: #888; margin-bottom: 10px; text-align: right; }
 
@@ -67,6 +67,13 @@
             border-radius: 6px;
             box-shadow: 0 3px 8px rgba(0,0,0,0.18);
         }
+        .culture-quiz { display: none; text-align: left; background: #fff8e1; border: 2px solid #ffc107; border-radius: 10px; padding: 14px; margin: 12px 0; }
+        .culture-quiz.show { display: block; }
+        .quiz-question { margin: 0 0 10px; color: #5d4300; font-size: 14px; line-height: 1.45; }
+        .quiz-options { display: grid; gap: 7px; }
+        .quiz-option { width: 100%; border: 1px solid #e3c25b; background: white; border-radius: 7px; padding: 9px; text-align: left; cursor: pointer; }
+        .quiz-option:hover { background: #fff3cd; }
+        .quiz-feedback { min-height: 20px; margin: 9px 0 0; font-size: 13px; font-weight: bold; }
 
         /* --- 리듬 게임 스타일 --- */
         #game-area { margin-top: 20px; display: none; background: #111; padding: 15px; border-radius: 10px; position: relative; overflow: hidden; user-select: none; }
@@ -76,8 +83,16 @@
         .hp-container { width: 100%; background: #333; height: 10px; border-radius: 5px; margin-bottom: 10px; overflow: hidden; border: 1px solid #444; }
         .hp-bar { width: 100%; height: 100%; background: #2ed573; transition: width 0.1s ease, background-color 0.3s; }
 
-        #game-canvas-container { position: relative; width: 100%; height: 320px; background: #222; border-radius: 6px 6px 0 0; overflow: hidden; }
-        canvas { display: block; width: 100%; height: 100%; }
+        #game-canvas-container { position: relative; width: 100%; height: 320px; background: radial-gradient(circle at 50% 75%, #493264 0, #21152e 48%, #0d0a13 100%); border-radius: 6px 6px 0 0; overflow: hidden; }
+        #game-canvas-container::before { content: ""; position: absolute; inset: 0; background: repeating-linear-gradient(90deg, transparent 0 24%, rgba(255,255,255,.025) 24% 25%); pointer-events: none; }
+        canvas { position: relative; z-index: 3; display: block; width: 100%; height: 100%; }
+        .dance-stage { position: absolute; inset: 0; z-index: 1; pointer-events: none; overflow: hidden; }
+        .country-dancer { position: absolute; bottom: 27px; width: 142px; height: 142px; background-image: url("world-dance-sprites.png"); background-repeat: no-repeat; background-size: 500% 400%; background-position: var(--sprite-x, 0%) var(--sprite-y, 0%); filter: drop-shadow(0 8px 7px rgba(0,0,0,.5)); opacity: .78; transform-origin: center bottom; }
+        .country-dancer.left { left: 5%; animation: dance-left .72s ease-in-out infinite alternate; }
+        .country-dancer.right { right: 5%; animation: dance-right .72s ease-in-out infinite alternate-reverse; }
+        #p3.game-mode .country-dancer { animation-duration: .46s; opacity: .88; }
+        @keyframes dance-left { 0% { transform: translateY(2px) rotate(-7deg) scale(1); } 50% { transform: translateY(-13px) rotate(3deg) scale(1.04); } 100% { transform: translateX(12px) translateY(0) rotate(7deg) scale(1); } }
+        @keyframes dance-right { 0% { transform: scaleX(-1) translateY(0) rotate(-6deg); } 50% { transform: scaleX(-1) translateY(-15px) rotate(4deg) scale(1.05); } 100% { transform: scaleX(-1) translateX(12px) rotate(7deg); } }
         
         /* 모바일 터치 패드 */
         .touch-pads { display: flex; width: 100%; margin-top: 0; gap: 0; border-radius: 0 0 6px 6px; overflow: hidden; }
@@ -97,7 +112,25 @@
         #p3 hr { margin: 12px 0 !important; }
         #p3 .btn { padding: 11px; margin-top: 8px !important; }
         #p3 .diff-box { margin: 8px 0; }
+        #p3 #r-tag, #p3 > hr, #p3 .rhythm-title, #p3 .rhythm-help, #p3 #preview-btn { display: none; }
+        #p3 .country-picker { display: block; margin-bottom: 8px !important; }
+        #p3 .select-style { padding: 8px; margin-bottom: 4px; font-size: 14px; }
+        #p3 .diff-box { display: flex; }
+        #p3 #r-desc { display: block; max-height: 105px; overflow: hidden; padding: 10px 12px; margin: 7px 0; font-size: 12px; }
+        #p3 #country-flag img { width: 150px; height: 96px; }
+        #p3 #r-title { margin: 8px 0 12px !important; }
+        .game-song-description { color: #f5eaff; background: rgba(108, 61, 138, .42); border: 1px solid rgba(255,255,255,.2); border-radius: 7px; padding: 7px 9px; margin: 0 0 8px; font-size: 11px; line-height: 1.35; text-align: left; }
+        .game-controls-help { color: #ffe082; font-size: 11px; margin: -3px 0 7px; }
+        .player-setup { display: none; background: #eef7ff; border: 1px solid #9cccf5; border-radius: 8px; padding: 9px; margin-top: 8px; text-align: left; }
+        .player-setup label { display: block; color: #174f7b; font-size: 12px; font-weight: bold; margin-bottom: 5px; }
+        .player-name-input { width: 100%; box-sizing: border-box; border: 1px solid #7db7e8; border-radius: 6px; padding: 8px; font-size: 14px; }
+        .leaderboard { display: none; background: #fffdf1; border: 1px solid #e8d36c; border-radius: 8px; margin-top: 8px; padding: 8px 10px; text-align: left; }
+        .leaderboard h4 { margin: 0 0 5px; color: #755c00; font-size: 13px; }
+        .leaderboard ol { margin: 0; padding-left: 24px; font-size: 11px; line-height: 1.45; }
+        .leaderboard li { padding-left: 3px; }
+        #p3.game-mode .player-setup, #p3.game-mode .leaderboard { display: none !important; }
         #p3.game-mode #r-tag,
+        #p3.game-mode .country-picker,
         #p3.game-mode #country-flag,
         #p3.game-mode #r-title,
         #p3.game-mode #r-desc,
@@ -105,6 +138,8 @@
         #p3.game-mode .rhythm-title,
         #p3.game-mode .rhythm-help,
         #p3.game-mode .diff-box,
+        #p3.game-mode #culture-quiz,
+        #p3.game-mode #quiz-open-btn,
         #p3.game-mode #preview-btn {
             display: none !important;
         }
@@ -114,35 +149,101 @@
         #p3.game-mode #game-area {
             margin-top: 10px;
         }
-    </style>
+    
+/* Family culture journey */
+:root { --page-bg-image:url('family-assets/family-rhythm-hero.png'); }
+body { height:100vh; height:100dvh; padding:16px; }
+body::before { opacity:.38; }
+body::after { background:rgba(240,247,250,.66); }
+.box { max-width:800px; max-height:calc(100vh - 32px); max-height:calc(100dvh - 32px); overflow-y:auto; padding:24px; border-radius:24px; background:rgba(255,255,255,.96); }
+#p1 h2 { color:#19483d; margin:16px 0 10px; font-size:clamp(1.4rem,3vw,2rem); }
+#p1 p { line-height:1.65; color:#466057; margin:10px auto; max-width:620px; }
+#family-hero { display:block; width:100%; max-height:320px; object-fit:cover; border-radius:18px; }
+.journey-steps { display:flex; gap:8px; justify-content:center; margin:16px 0; flex-wrap:wrap; }
+.journey-steps span { background:#edf6f2; color:#286653; padding:8px 12px; border-radius:20px; font-weight:bold; font-size:.85rem; }
+#start-btn { background:#24735d; font-size:1.1rem; border-radius:14px; }
+.family-value-photo { background-image:url('family-assets/family-values-atlas.png'); background-size:200% 200%; background-position:var(--family-photo-position,0% 0%); border-radius:16px; aspect-ratio:1; }
+.question-photos { display:flex; gap:10px; justify-content:center; margin:0 0 14px; }
+.question-photos .family-value-photo { width:65px; }
+#family-culture-card { display:grid; grid-template-columns:160px 1fr; gap:18px; text-align:left; align-items:center; padding:14px; border-radius:18px; background:#eef7f1; margin:12px 0; }
+#family-culture-card h4 { margin:0 0 8px; color:#225741; font-size:1.1rem; }
+#family-culture-text { margin:0; font-size:.9rem; line-height:1.6; color:#3c554a; }
+#p3 #r-desc { max-height:none; overflow:visible; }
+#p3 h2 { color:#245842; }
+#p3.game-mode #family-culture-card,#p3.game-mode > h2,#p3.game-mode > #restart-btn,#p3.game-mode > #game-start-btn { display:none!important; }
+/* Tablet play fills the viewport even if native fullscreen is unavailable. */
+body.rhythm-screen { padding:0; overflow:hidden; background:#090e1c; }
+body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; height:100vh; height:100dvh; max-height:none; margin:0; padding:0; border-radius:0; overflow:hidden; backdrop-filter:none; background:#090e1c; }
+#p3.game-mode { position:fixed; inset:0; width:100%; height:100vh; height:100dvh; background:#090e1c; z-index:50; }
+#p3.game-mode #game-area { display:flex!important; flex-direction:column; width:100%; height:100%; margin:0; border-radius:0; box-sizing:border-box; padding: max(10px,env(safe-area-inset-top)) max(12px,env(safe-area-inset-right)) max(10px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left)); background:linear-gradient(#101a30,#080c18); }
+#p3.game-mode #game-canvas-container { flex:1; min-height:100px; height:auto; background:linear-gradient(rgba(10,12,28,.83),rgba(10,12,28,.91)),url('family-assets/family-rhythm-hero.png') center/cover; }
+#p3.game-mode .game-header { align-items:center; gap:10px; flex-wrap:wrap; margin-bottom:6px; }
+.game-toolbar { display:flex; gap:8px; }
+.game-toolbar button { border:1px solid #65809c; border-radius:10px; background:#22354c; color:white; min-height:44px; padding:8px 14px; font-weight:bold; cursor:pointer; }
+#p3.game-mode .game-song-description { font-size:12px; max-height:48px; overflow-y:auto; flex-shrink:0; }
+#p3.game-mode .game-controls-help { font-size:13px; margin:2px 0 8px; }
+#p3.game-mode .touch-pads { flex-shrink:0; min-height:90px; touch-action:none; }
+#p3.game-mode .pad { font-size:clamp(1.3rem,4vw,2.2rem); padding:16px 0; touch-action:none; }
+#p3.game-mode .country-dancer { opacity:.35; width:clamp(100px,20vw,190px); height:clamp(100px,20vw,190px); }
+@media(max-width:600px) {
+ .box { padding:16px; }
+ #family-hero { max-height:220px; }
+ #family-culture-card { grid-template-columns:100px 1fr; gap:12px; padding:10px; }
+ #family-culture-text { font-size:.8rem; }
+ .game-toolbar button { padding:8px 10px; }
+ #p3.game-mode .game-header { font-size:12px; }
+}
+@media(max-height:500px) { #p3.game-mode .game-song-description,#p3.game-mode .game-controls-help { display:none; } #p3.game-mode .touch-pads { min-height:68px; } }
+
+</style>
 </head>
 <body>
 
 <div class="box">
     <div id="p1" class="page active" style="display:block;">
-        <h2>🌍 세계 가족 문화 성향 테스트</h2>
-        <p>총 10개의 질문을 통해 나의 가족 소통 성향을 분석하고, 전 세계 50개국 중 나와 가장 닮은 가족 문화와 대표 노래를 가진 나라를 찾아봅니다!</p>
+        <img id="family-hero" src="family-assets/family-rhythm-hero.png" alt="여러 세대의 가족이 태블릿으로 세계 음악 리듬게임을 즐기는 모습">
+<h2>🌍 나와 닮은 세계의 효문화 여행</h2>
+        <p>10개의 질문으로 나의 가족 소통 성향을 알아보고,<br>나와 닮은 나라의 효문화와 가족 이야기를 만나 보세요.<br>그 나라의 노래는 태블릿 리듬게임으로 즐겨요!
+<div class="journey-steps"><span>① 내 성향 찾기</span><span>② 세계의 효문화 배우기</span><span>③ 노래에 맞춰 터치!</span></div></p>
         <button class="btn" id="start-btn" onclick="forceStartTest()">테스트 시작하기</button>
     </div>
 
     <div id="p2" class="page" style="display:none;">
-        <div id="q-progress" class="progress"></div>
+        <div class="question-photos" aria-hidden="true"><div class="family-value-photo"></div><div class="family-value-photo" style="--family-photo-position:100% 0%"></div><div class="family-value-photo" style="--family-photo-position:0% 100%"></div><div class="family-value-photo" style="--family-photo-position:100% 100%"></div></div>
+<div id="q-progress" class="progress"></div>
         <h3 id="q-text" style="word-break: keep-all; font-size: 18px; color: #222; text-align: left;">질문</h3>
         <div id="opt-box"></div>
     </div>
 
     <div id="p3" class="page" style="display:none;">
-        <h2>나와 닮은 가족 문화 국가는?</h2>
+        <h2>나와 닮은 문화 국가</h2>
         
-        <div style="margin-bottom: 15px; text-align: left;">
-            <label for="country-select" style="font-size: 14px; font-weight: bold; color: #555; display: block; margin-bottom: 6px;">👉 매칭된 그룹에서 상세 국가를 선택해 보세요:</label>
+        <div class="country-picker" style="margin-bottom: 15px; text-align: left;">
+            <label for="country-select" style="font-size: 14px; font-weight: bold; color: #555; display: block; margin-bottom: 6px;">👉 나와 닮은 유형의 5개 국가 중 하나를 선택하세요:</label>
             <select id="country-select" class="select-style"></select>
         </div>
 
         <div id="r-tag" class="music-tag"></div>
         <div id="country-flag" class="country-flag" aria-label="선택한 국가 국기"></div>
         <h3 id="r-title" style="color: #007bff; margin-top: 5px; font-size: 22px;"></h3>
-        <p id="r-desc" class="result-text"></p>
+        <section id="family-culture-card"><div id="family-result-photo" class="family-value-photo" role="img" aria-label="가족이 서로 존중하는 모습"></div><div><h4 id="family-value-title">나와 닮은 효문화</h4><p id="family-culture-text"></p></div></section>
+<p id="r-desc" class="result-text"></p>
+
+        <button class="btn" id="quiz-open-btn" onclick="showCultureQuiz()" style="background: #f0ad4e; margin-top: 10px; width: 100%;">📝 가족문화 퀴즈로 가기</button>
+        <div id="culture-quiz" class="culture-quiz" aria-live="polite">
+            <p id="quiz-question" class="quiz-question"></p>
+            <div id="quiz-options" class="quiz-options"></div>
+            <p id="quiz-feedback" class="quiz-feedback"></p>
+        </div>
+        <button class="btn" id="game-start-btn" onclick="requestRhythmGame()" style="display: none; background: #28a745; margin-top: 10px; width: 100%;">🎵 대표곡 리듬게임 시작하기</button>
+        <div id="player-setup" class="player-setup">
+            <label for="player-name">🏅 TOP 5에 기록할 이름</label>
+            <input id="player-name" class="player-name-input" type="text" maxlength="12" placeholder="이름을 입력하세요" autocomplete="off">
+        </div>
+        <div id="leaderboard" class="leaderboard">
+            <h4 id="leaderboard-title">🏆 대표곡 TOP 5</h4>
+            <ol id="leaderboard-list"></ol>
+        </div>
         
         <hr style="border: 0; height: 1px; background: #ddd; margin: 20px 0;">
         
@@ -150,25 +251,29 @@
         <p class="rhythm-help" style="font-size: 13px; color: #666; margin-top: 0;">PC는 키보드(S, D, K, L), 모바일은 하단 버튼을 손가락으로 누르세요!</p>
         
         <div class="diff-box">
-            <button class="diff-btn active" onclick="setDifficulty('easy', this)">Easy</button>
-            <button class="diff-btn" onclick="setDifficulty('normal', this)">Normal</button>
-            <button class="diff-btn" onclick="setDifficulty('hard', this)">Hard</button>
+            <button class="diff-btn active" onclick="setDifficulty('easy', this)">하</button>
+            <button class="diff-btn" onclick="setDifficulty('normal', this)">중</button>
+            <button class="diff-btn" onclick="setDifficulty('hard', this)">상</button>
         </div>
 
         <a class="btn" id="preview-btn" target="_blank" rel="noopener noreferrer" style="background: #ff0000; margin-top: 10px; width: 100%;">🔴 유튜브로 곡 미리듣기</a>
-        <button class="btn" id="game-start-btn" onclick="toggleRhythmGame()" style="background: #28a745; margin-top: 10px; width: 100%;">게임 시작하기</button>
-
         <div id="game-area">
-            <div class="game-header">
+            <div class="game-header"><div class="game-toolbar"><button type="button" onclick="enterTabletGameScreen()">⛶ 전체화면</button><button type="button" onclick="stopRhythmGame()">문화로 돌아가기</button></div>
                 <span id="game-song-name">노래 제목</span>
                 <span>Time: <span id="game-time">1:30</span> | Score: <span id="game-score">0</span></span>
             </div>
+            <div id="game-song-description" class="game-song-description"></div>
+            <div class="game-controls-help">나라 상징이 파란 선에 오면 아래 버튼을 터치해요 · 긴 꼬리는 끝까지 누르세요!</div>
             
             <div class="hp-container">
                 <div id="game-hp" class="hp-bar"></div>
             </div>
 
             <div id="game-canvas-container">
+                <div class="dance-stage" aria-hidden="true">
+                    <div class="country-dancer left"></div>
+                    <div class="country-dancer right"></div>
+                </div>
                 <canvas id="gameCanvas"></canvas>
             </div>
             <div class="touch-pads">
@@ -184,11 +289,19 @@
 </div>
 
 <script>
+    function showOnlyPage(pageId) {
+        ['p1', 'p2', 'p3'].forEach(id => {
+            const page = document.getElementById(id);
+            const visible = id === pageId;
+            page.classList.toggle('active', visible);
+            page.style.display = visible ? 'block' : 'none';
+        });
+    }
+
     // 🚨 핵심 수정: 스크립트 최상단에 화면 전환 함수를 배치하여 무조건 작동하도록 보장
     function forceStartTest() {
         try {
-            document.getElementById('p1').style.display = 'none';
-            document.getElementById('p2').style.display = 'block';
+            showOnlyPage('p2');
             showQ();
         } catch(e) {
             alert("오류 발생: 다시 눌러주세요.");
@@ -212,23 +325,60 @@
         A: {
             groupName: "동양의 예의와 전통 효(孝) 중심 문화",
             desc: "당신은 아시아권의 깊은 효 사상과 닮아 있습니다. 가족에 대한 헌신과 보답을 명예로운 미덕으로 여기며, 윗사람을 공경하고 도리를 다하는 책임감 있는 스타일입니다.",
-            countries: [{ name: "대한민국", song: "아리랑" }, { name: "베트남", song: "Lý Cây Đa" }, { name: "중국", song: "모리화" }, { name: "일본", song: "사쿠라 사쿠라" }, { name: "대만", song: "망춘풍" }]
+            countries: [{ name: "대한민국", song: "아리랑" }, { name: "베트남", song: "똠응우옌" }, { name: "중국", song: "모리화" }, { name: "일본", song: "사쿠라 사쿠라" }, { name: "대만", song: "망춘풍" }]
         },
         B: {
             groupName: "서구의 합리성과 상호 독립 존중 문화",
             desc: "당신은 영미권 및 북유럽의 합리적인 가족 문화와 닮았습니다. 부모 자식 간이라도 개인의 사생활과 선택을 지켜주는 것이 진정한 존중이라 보며, 구속 없는 평등한 관계를 추구합니다.",
-            countries: [{ name: "미국", song: "Oh! Susanna" }, { name: "영국", song: "Greensleeves" }, { name: "캐나다", song: "붉은 강 골짜기" }, { name: "호주", song: "월칭 마틸다" }, { name: "독일", song: "로렐라이" }]
+            countries: [{ name: "미국", song: "홈 온 더 레인지" }, { name: "영국", song: "대니 보이" }, { name: "캐나다", song: "붉은 강 골짜기" }, { name: "호주", song: "월칭 마틸다" }, { name: "독일", song: "로렐라이" }]
         },
         C: {
             groupName: "하브루타식 깊은 소통과 가치 교감 문화",
             desc: "당신은 지적인 소통과 정신적 가치를 유대감의 핵심으로 봅니다. 무조건적인 순종이나 차가운 독립보다는, 끊임없는 질문과 토론을 통해 서로 지혜를 나누는 밀도 높은 패밀리십을 선호합니다.",
-            countries: [{ name: "이스라엘", song: "하바 나길라" }, { name: "오스트리아", song: "에델바이스" }, { name: "폴란드", song: "쇼팽 마주르카" }, { name: "러시아", song: "Kalinka" }, { name: "튀르키예", song: "Üsküdar" }]
+            countries: [{ name: "이스라엘", song: "하바 나길라" }, { name: "오스트리아", song: "에델바이스" }, { name: "폴란드", song: "쇼팽 마주르카" }, { name: "러시아", song: "카튜샤" }, { name: "튀르키예", song: "위스퀴다르" }]
         },
         D: {
             groupName: "라틴·지중해의 열정적인 대가족 공동체 문화",
             desc: "당신은 남미와 남유럽 특유의 뜨거운 가족 중심주의와 닮았습니다. 나 혼자의 삶보다 온 친척이 왁자지껄 뭉쳐 감정을 교류하고, 서로 품어주는 끈끈한 정 속에서 행복을 느끼는 타입입니다.",
-            countries: [{ name: "이탈리아", song: "Santa Lucia" }, { name: "스페인", song: "El Vito" }, { name: "멕시코", song: "La Cucaracha" }, { name: "브라질", song: "Cai Cai Balão" }, { name: "케냐", song: "하쿠나 마타타" }]
+            countries: [{ name: "이탈리아", song: "오 솔레 미오" }, { name: "스페인", song: "에스파냐 카니" }, { name: "멕시코", song: "라 밤바" }, { name: "브라질", song: "이파네마에서 온 소녀" }, { name: "케냐", song: "하쿠나 마타타" }]
         }
+    };
+
+    const countryFamilyCultures = {
+        "대한민국": "부모와 어른을 공경하는 효와 가족 간의 정을 중요하게 여깁니다. 명절에는 여러 세대가 모여 음식을 나누고 조상을 기리며, 최근에는 전통적인 책임감과 개인의 선택을 함께 존중하는 모습으로 변화하고 있습니다.",
+        "베트남": "여러 세대가 가까이 지내며 어른을 공경하고 가족 구성원이 서로 돕는 문화를 소중히 여깁니다. 설 명절인 뗏(Tết)에는 온 가족이 모여 조상을 기리고 새해의 복을 나눕니다.",
+        "중국": "효와 가족의 화합을 중요한 가치로 여기며, 개인의 일도 가족 전체의 일처럼 함께 의논하는 경우가 많습니다. 춘절과 중추절에는 가족이 한자리에 모여 식사하며 유대감을 다집니다.",
+        "일본": "가족끼리도 서로의 공간과 예의를 존중하며 말보다 배려와 책임 있는 행동으로 마음을 표현하는 경향이 있습니다. 오봉이나 새해에는 고향을 찾아 가족과 조상을 기억합니다.",
+        "대만": "가족과 친족의 연결을 중요하게 여기고 어른을 공경하며, 식사를 함께하는 시간을 소중히 여깁니다. 설과 중추절에는 대가족이 모여 안부를 나누고 가족의 결속을 다집니다.",
+        "미국": "자녀의 독립성과 개성을 존중하고 가족 간에도 생각과 감정을 직접 표현하는 편입니다. 추수감사절처럼 가족이 모이는 날을 중요하게 여기며, 다양한 형태의 가족을 폭넓게 인정합니다.",
+        "영국": "가족 구성원의 사생활과 자율성을 존중하면서도 중요한 순간에는 차분하고 꾸준하게 서로를 지지합니다. 함께 차를 마시거나 일요일 식사를 즐기는 소소한 일상이 가족 유대를 이어 줍니다.",
+        "캐나다": "개인의 선택과 평등을 존중하고, 서로 다른 문화적 배경을 가진 가족 형태를 자연스럽게 받아들입니다. 대화와 협의를 통해 역할을 나누며 휴일이나 야외 활동을 함께 즐깁니다.",
+        "호주": "격식보다 편안하고 솔직한 관계를 선호하며 자녀의 독립심과 도전 정신을 북돋습니다. 바비큐, 스포츠, 캠핑처럼 야외에서 온 가족이 함께 시간을 보내는 문화가 발달해 있습니다.",
+        "독일": "가족 안에서도 약속, 책임, 시간 관리를 중요하게 여기며 자녀가 스스로 판단하고 독립하도록 돕습니다. 식사나 주말 산책처럼 정해진 가족 시간을 꾸준히 지키는 편입니다.",
+        "이스라엘": "가족 식탁에서 질문하고 토론하며 생각을 나누는 것을 중요하게 여깁니다. 안식일과 명절에는 여러 세대가 모여 음식, 이야기, 전통을 함께 나누며 강한 유대감을 형성합니다.",
+        "오스트리아": "가족의 안정과 개인의 자율성을 함께 중시하며, 식사와 여가를 통해 차분하게 관계를 이어 갑니다. 주말에는 자연 속에서 산책하거나 문화 활동을 함께 즐기는 경우가 많습니다.",
+        "폴란드": "가족과 친척의 결속이 강하고 어른을 공경하며, 어려울 때 서로 돕는 것을 당연하게 여깁니다. 크리스마스이브 식사와 부활절에는 여러 세대가 모여 전통과 신앙을 나눕니다.",
+        "러시아": "가까운 가족에게 깊은 정과 의리를 보이며, 힘든 일이 있을 때 실질적으로 돕는 관계를 중요하게 여깁니다. 명절과 기념일에는 넉넉한 음식과 긴 대화로 함께하는 시간을 즐깁니다.",
+        "튀르키예": "가족과 친척의 왕래가 활발하고 연장자를 존중하며 손님을 따뜻하게 맞이합니다. 식사와 차를 함께 나누는 시간이 길고, 명절에는 친척을 방문해 안부와 정을 나눕니다.",
+        "이탈리아": "가족과 함께 먹고 이야기하는 시간을 일상의 중심으로 여기며 감정을 풍부하게 표현합니다. 주말 식사에는 여러 세대가 모이는 경우가 많고, 친척 간의 잦은 교류도 중요하게 생각합니다.",
+        "스페인": "가족과 친척이 자주 모여 늦은 식사와 활기찬 대화를 즐기며 서로의 일상에 관심을 보입니다. 축제와 휴일에는 여러 세대가 함께 시간을 보내며 공동체적 유대를 다집니다.",
+        "멕시코": "대가족과 친족의 결속이 강하고 기쁨과 어려움을 함께 나누는 문화를 소중히 여깁니다. 생일, 명절, 망자의 날 같은 날에는 음식과 음악을 나누며 세대와 가족의 기억을 잇습니다.",
+        "브라질": "가족 범위를 친척과 가까운 친구까지 넓게 느끼며 포옹, 대화, 음악으로 애정을 적극 표현합니다. 주말 모임과 축구, 바비큐 같은 활동을 통해 활기찬 유대감을 만듭니다.",
+        "케냐": "확대가족과 공동체가 양육과 돌봄을 함께 책임지는 전통이 강하며 어른의 경험과 조언을 존중합니다. 가족 행사에서는 여러 세대가 모여 음식, 노래, 이야기를 나누며 소속감을 확인합니다."
+    };
+
+    const countryQuizKeywords = {
+        "대한민국": "효", "베트남": "뗏", "중국": "춘절", "일본": "오봉", "대만": "중추절",
+        "미국": "추수감사절", "영국": "일요일", "캐나다": "평등", "호주": "바비큐", "독일": "약속",
+        "이스라엘": "안식일", "오스트리아": "자율성", "폴란드": "크리스마스이브", "러시아": "의리", "튀르키예": "연장자",
+        "이탈리아": "식사", "스페인": "축제", "멕시코": "망자의 날", "브라질": "포옹", "케냐": "확대가족"
+    };
+
+    const countrySpritePositions = {
+        "대한민국": [0, 0], "베트남": [25, 0], "중국": [50, 0], "일본": [75, 0], "대만": [100, 0],
+        "미국": [0, 33.333], "영국": [25, 33.333], "캐나다": [50, 33.333], "호주": [75, 33.333], "독일": [100, 33.333],
+        "이스라엘": [0, 66.667], "오스트리아": [25, 66.667], "폴란드": [50, 66.667], "러시아": [75, 66.667], "튀르키예": [100, 66.667],
+        "이탈리아": [0, 100], "스페인": [25, 100], "멕시코": [50, 100], "브라질": [75, 100], "케냐": [100, 100]
     };
 
     const countryFlagImages = {
@@ -256,24 +406,24 @@
 
     const songYoutubeQueries = {
         "아리랑": "Arirang Korean folk song",
-        "Lý Cây Đa": "Lý Cây Đa Vietnamese folk song",
+        "똠응우옌": "똠응우옌 Vietnamese folk song",
         "모리화": "Mo Li Hua Chinese folk song",
         "사쿠라 사쿠라": "Sakura Sakura Japanese folk song",
         "망춘풍": "Wang Chun Feng Taiwanese folk song",
-        "Oh! Susanna": "Oh Susanna American folk song",
-        "Greensleeves": "Greensleeves English folk song",
+        "홈 온 더 레인지": "Oh Susanna American folk song",
+        "대니 보이": "대니 보이 English folk song",
         "붉은 강 골짜기": "Red River Valley folk song",
         "월칭 마틸다": "Waltzing Matilda Australian folk song",
         "로렐라이": "Lorelei German folk song",
         "하바 나길라": "Hava Nagila Israeli folk song",
         "에델바이스": "Edelweiss Austrian song",
         "쇼팽 마주르카": "Chopin Mazurka Polish music",
-        "Kalinka": "Kalinka Russian folk song",
-        "Üsküdar": "Üsküdar Turkish folk song",
-        "Santa Lucia": "Santa Lucia Italian song",
-        "El Vito": "El Vito Spanish folk song",
-        "La Cucaracha": "La Cucaracha Mexican folk song",
-        "Cai Cai Balão": "Cai Cai Balão Brazilian folk song",
+        "카튜샤": "카튜샤 Russian folk song",
+        "위스퀴다르": "위스퀴다르 Turkish folk song",
+        "오 솔레 미오": "오 솔레 미오 Italian song",
+        "에스파냐 카니": "에스파냐 카니 Spanish folk song",
+        "라 밤바": "라 밤바 Mexican folk song",
+        "이파네마에서 온 소녀": "이파네마에서 온 소녀 Brazilian folk song",
         "하쿠나 마타타": "Hakuna Matata Kenya song"
     };
 
@@ -284,17 +434,17 @@
 
     const songDescriptions = {
         "아리랑": "한국을 대표하는 민요로, 이별과 그리움, 삶의 애틋함을 담고 있습니다. 지역마다 다른 변주가 있어 한국 가족문화의 정서와 공동체 기억을 느낄 수 있는 곡입니다.",
-        "Lý Cây Đa": "베트남 북부 민요 계열의 노래로, 마을과 자연, 사람들의 만남을 밝고 서정적으로 표현합니다. 가족과 이웃이 함께 어울리는 베트남식 공동체 감각을 떠올리게 합니다.",
+        "똠응우옌": "베트남 북부 민요 계열의 노래로, 마을과 자연, 사람들의 만남을 밝고 서정적으로 표현합니다. 가족과 이웃이 함께 어울리는 베트남식 공동체 감각을 떠올리게 합니다.",
         "모리화": "중국의 대표 민요로, 재스민 꽃의 아름다움을 통해 우아하고 부드러운 정서를 전합니다. 절제된 선율 속에 가족과 전통을 소중히 여기는 분위기가 잘 어울립니다.",
         "사쿠라 사쿠라": "일본의 봄과 벚꽃을 상징하는 전통 선율입니다. 고요하고 단정한 멜로디가 계절감, 예절, 섬세한 감수성을 드러냅니다.",
-        "Oh! Susanna": "미국의 대중적인 민요로, 개척시대의 활기와 낙천적인 분위기를 담고 있습니다. 자유롭고 직접적인 표현이 미국식 독립성과 밝은 에너지를 보여줍니다.",
-        "Greensleeves": "영국 전통 선율로 널리 알려진 곡이며, 차분하고 품격 있는 분위기가 특징입니다. 오래된 이야기와 예술적 감수성이 영국 문화의 안정감과 잘 어울립니다.",
-        "Kalinka": "러시아를 대표하는 빠르고 힘찬 민요입니다. 점점 고조되는 리듬이 러시아 특유의 열정, 생명력, 공동체적 흥을 강하게 보여줍니다.",
-        "Üsküdar": "튀르키예의 전통적인 도시 정서를 담은 노래로, 동서양 문화가 만나는 분위기를 느낄 수 있습니다. 부드러운 선율 속에 가족과 일상의 이야기가 녹아 있습니다.",
-        "Santa Lucia": "이탈리아 나폴리 지역과 관련 깊은 서정적인 노래입니다. 바다와 밤 풍경을 떠올리게 하는 선율이 따뜻하고 낭만적인 가족 정서와 잘 맞습니다.",
-        "El Vito": "스페인 안달루시아 지역의 민속적 색채가 강한 노래입니다. 빠른 리듬과 강한 표현이 스페인의 열정, 춤, 축제 문화를 떠올리게 합니다.",
-        "La Cucaracha": "멕시코를 대표하는 흥겨운 민요로, 익살스럽고 반복적인 선율이 특징입니다. 가족과 이웃이 함께 웃고 노래하는 활기찬 분위기를 잘 담고 있습니다.",
-        "Cai Cai Balão": "브라질의 어린이 노래로 알려져 있으며, 밝고 가벼운 선율이 특징입니다. 놀이와 축제, 가족이 함께 즐기는 브라질의 따뜻한 생활감을 느낄 수 있습니다."
+        "홈 온 더 레인지": "미국의 대중적인 민요로, 개척시대의 활기와 낙천적인 분위기를 담고 있습니다. 자유롭고 직접적인 표현이 미국식 독립성과 밝은 에너지를 보여줍니다.",
+        "대니 보이": "영국 전통 선율로 널리 알려진 곡이며, 차분하고 품격 있는 분위기가 특징입니다. 오래된 이야기와 예술적 감수성이 영국 문화의 안정감과 잘 어울립니다.",
+        "카튜샤": "러시아를 대표하는 빠르고 힘찬 민요입니다. 점점 고조되는 리듬이 러시아 특유의 열정, 생명력, 공동체적 흥을 강하게 보여줍니다.",
+        "위스퀴다르": "튀르키예의 전통적인 도시 정서를 담은 노래로, 동서양 문화가 만나는 분위기를 느낄 수 있습니다. 부드러운 선율 속에 가족과 일상의 이야기가 녹아 있습니다.",
+        "오 솔레 미오": "이탈리아 나폴리 지역과 관련 깊은 서정적인 노래입니다. 바다와 밤 풍경을 떠올리게 하는 선율이 따뜻하고 낭만적인 가족 정서와 잘 맞습니다.",
+        "에스파냐 카니": "스페인 안달루시아 지역의 민속적 색채가 강한 노래입니다. 빠른 리듬과 강한 표현이 스페인의 열정, 춤, 축제 문화를 떠올리게 합니다.",
+        "라 밤바": "멕시코를 대표하는 흥겨운 민요로, 익살스럽고 반복적인 선율이 특징입니다. 가족과 이웃이 함께 웃고 노래하는 활기찬 분위기를 잘 담고 있습니다.",
+        "이파네마에서 온 소녀": "브라질의 어린이 노래로 알려져 있으며, 밝고 가벼운 선율이 특징입니다. 놀이와 축제, 가족이 함께 즐기는 브라질의 따뜻한 생활감을 느낄 수 있습니다."
     };
 
     const songMelodies = {
@@ -320,19 +470,38 @@
         "하쿠나 마타타": [{ f: 261, d: 2 }, { f: 293, d: 2 }, { f: 329, d: 4 }, { f: 392, d: 4 }, { f: 440, d: 2 }, { f: 392, d: 2 }, { f: 523, d: 4 }],
         "default": [{ f: 261, d: 3 }, { f: 293, d: 3 }, { f: 329, d: 3 }, { f: 349, d: 3 }, { f: 392, d: 3 }, { f: 440, d: 3 }, { f: 494, d: 3 }, { f: 523, d: 3 }]
     };
-    songMelodies["Lý Cây Đa"] = songMelodies["똠응우옌"];
-    songMelodies["Oh! Susanna"] = songMelodies["홈 온 더 레인지"];
-    songMelodies["Greensleeves"] = songMelodies["대니 보이"];
-    songMelodies["Kalinka"] = songMelodies["카튜샤"];
-    songMelodies["Üsküdar"] = songMelodies["위스퀴다르"];
-    songMelodies["Santa Lucia"] = songMelodies["오 솔레 미오"];
-    songMelodies["El Vito"] = songMelodies["에스파냐 카니"];
-    songMelodies["La Cucaracha"] = songMelodies["라 밤바"];
-    songMelodies["Cai Cai Balão"] = songMelodies["이파네마에서 온 소녀"];
+
+
+    const songTracks = {"아리랑":{"src":"world song/country-01.wav","durationMs":65000,"events":[{"time":4200,"freq":293,"duration":333},{"time":4583,"freq":329,"duration":333},{"time":4967,"freq":392,"duration":667},{"time":5683,"freq":440,"duration":333},{"time":6067,"freq":392,"duration":333},{"time":6450,"freq":440,"duration":667},{"time":7167,"freq":392,"duration":333},{"time":7550,"freq":329,"duration":333},{"time":7933,"freq":293,"duration":667},{"time":8650,"freq":329,"duration":333},{"time":9033,"freq":293,"duration":333},{"time":9417,"freq":220,"duration":667},{"time":10133,"freq":293,"duration":333},{"time":10517,"freq":329,"duration":333},{"time":10900,"freq":392,"duration":667},{"time":11617,"freq":440,"duration":333},{"time":12000,"freq":392,"duration":333},{"time":12383,"freq":440,"duration":667},{"time":13100,"freq":392,"duration":333},{"time":13483,"freq":329,"duration":333},{"time":13867,"freq":293,"duration":667},{"time":14583,"freq":329,"duration":333},{"time":14967,"freq":293,"duration":333},{"time":15350,"freq":220,"duration":667},{"time":16067,"freq":293,"duration":333},{"time":16450,"freq":329,"duration":333},{"time":16833,"freq":392,"duration":667},{"time":17550,"freq":440,"duration":333},{"time":17933,"freq":392,"duration":333},{"time":18317,"freq":440,"duration":667},{"time":19033,"freq":392,"duration":333},{"time":19417,"freq":329,"duration":333},{"time":19800,"freq":293,"duration":667},{"time":20517,"freq":329,"duration":333},{"time":20900,"freq":293,"duration":333},{"time":21283,"freq":220,"duration":667},{"time":22000,"freq":293,"duration":333},{"time":22383,"freq":329,"duration":333},{"time":22767,"freq":392,"duration":667},{"time":23483,"freq":440,"duration":333},{"time":23867,"freq":392,"duration":333},{"time":24250,"freq":440,"duration":667},{"time":24967,"freq":392,"duration":333},{"time":25350,"freq":329,"duration":333},{"time":25733,"freq":293,"duration":667},{"time":26450,"freq":329,"duration":333},{"time":26833,"freq":293,"duration":333},{"time":27217,"freq":220,"duration":667},{"time":27933,"freq":293,"duration":333},{"time":28317,"freq":329,"duration":333},{"time":28700,"freq":392,"duration":667},{"time":29417,"freq":440,"duration":333},{"time":29800,"freq":392,"duration":333},{"time":30183,"freq":440,"duration":667},{"time":30900,"freq":392,"duration":333},{"time":31283,"freq":329,"duration":333},{"time":31667,"freq":293,"duration":667},{"time":32383,"freq":329,"duration":333},{"time":32767,"freq":293,"duration":333},{"time":33150,"freq":220,"duration":667},{"time":33867,"freq":293,"duration":333},{"time":34250,"freq":329,"duration":333},{"time":34633,"freq":392,"duration":667},{"time":35350,"freq":440,"duration":333},{"time":35733,"freq":392,"duration":333},{"time":36117,"freq":440,"duration":667},{"time":36833,"freq":392,"duration":333},{"time":37217,"freq":329,"duration":333},{"time":37600,"freq":293,"duration":667},{"time":38317,"freq":329,"duration":333},{"time":38700,"freq":293,"duration":333},{"time":39083,"freq":220,"duration":667},{"time":39800,"freq":293,"duration":333},{"time":40183,"freq":329,"duration":333},{"time":40567,"freq":392,"duration":667},{"time":41283,"freq":440,"duration":333},{"time":41667,"freq":392,"duration":333},{"time":42050,"freq":440,"duration":667},{"time":42767,"freq":392,"duration":333},{"time":43150,"freq":329,"duration":333},{"time":43533,"freq":293,"duration":667},{"time":44250,"freq":329,"duration":333},{"time":44633,"freq":293,"duration":333},{"time":45017,"freq":220,"duration":667},{"time":45733,"freq":293,"duration":333},{"time":46117,"freq":329,"duration":333},{"time":46500,"freq":392,"duration":667},{"time":47217,"freq":440,"duration":333},{"time":47600,"freq":392,"duration":333},{"time":47983,"freq":440,"duration":667},{"time":48700,"freq":392,"duration":333},{"time":49083,"freq":329,"duration":333},{"time":49467,"freq":293,"duration":667},{"time":50183,"freq":329,"duration":333},{"time":50567,"freq":293,"duration":333},{"time":50950,"freq":220,"duration":667},{"time":51667,"freq":293,"duration":333},{"time":52050,"freq":329,"duration":333},{"time":52433,"freq":392,"duration":667},{"time":53150,"freq":440,"duration":333},{"time":53533,"freq":392,"duration":333},{"time":53917,"freq":440,"duration":667},{"time":54633,"freq":392,"duration":333},{"time":55017,"freq":329,"duration":333},{"time":55400,"freq":293,"duration":667},{"time":56117,"freq":329,"duration":333},{"time":56500,"freq":293,"duration":333},{"time":56883,"freq":220,"duration":667},{"time":57600,"freq":293,"duration":333},{"time":57983,"freq":329,"duration":333},{"time":58367,"freq":392,"duration":667},{"time":59083,"freq":440,"duration":333},{"time":59467,"freq":392,"duration":333},{"time":59850,"freq":440,"duration":667},{"time":60567,"freq":392,"duration":333},{"time":60950,"freq":329,"duration":333},{"time":61333,"freq":293,"duration":667},{"time":62050,"freq":329,"duration":333},{"time":62433,"freq":293,"duration":333},{"time":62817,"freq":220,"duration":667}]},"똠응우옌":{"src":"world song/country-02.wav","durationMs":65000,"events":[{"time":4200,"freq":329,"duration":500},{"time":4750,"freq":392,"duration":500},{"time":5300,"freq":440,"duration":500},{"time":5850,"freq":523,"duration":500},{"time":6400,"freq":587,"duration":1000},{"time":7450,"freq":523,"duration":500},{"time":8000,"freq":440,"duration":500},{"time":8550,"freq":329,"duration":500},{"time":9100,"freq":392,"duration":500},{"time":9650,"freq":440,"duration":500},{"time":10200,"freq":523,"duration":500},{"time":10750,"freq":587,"duration":1000},{"time":11800,"freq":523,"duration":500},{"time":12350,"freq":440,"duration":500},{"time":12900,"freq":329,"duration":500},{"time":13450,"freq":392,"duration":500},{"time":14000,"freq":440,"duration":500},{"time":14550,"freq":523,"duration":500},{"time":15100,"freq":587,"duration":1000},{"time":16150,"freq":523,"duration":500},{"time":16700,"freq":440,"duration":500},{"time":17250,"freq":329,"duration":500},{"time":17800,"freq":392,"duration":500},{"time":18350,"freq":440,"duration":500},{"time":18900,"freq":523,"duration":500},{"time":19450,"freq":587,"duration":1000},{"time":20500,"freq":523,"duration":500},{"time":21050,"freq":440,"duration":500},{"time":21600,"freq":329,"duration":500},{"time":22150,"freq":392,"duration":500},{"time":22700,"freq":440,"duration":500},{"time":23250,"freq":523,"duration":500},{"time":23800,"freq":587,"duration":1000},{"time":24850,"freq":523,"duration":500},{"time":25400,"freq":440,"duration":500},{"time":25950,"freq":329,"duration":500},{"time":26500,"freq":392,"duration":500},{"time":27050,"freq":440,"duration":500},{"time":27600,"freq":523,"duration":500},{"time":28150,"freq":587,"duration":1000},{"time":29200,"freq":523,"duration":500},{"time":29750,"freq":440,"duration":500},{"time":30300,"freq":329,"duration":500},{"time":30850,"freq":392,"duration":500},{"time":31400,"freq":440,"duration":500},{"time":31950,"freq":523,"duration":500},{"time":32500,"freq":587,"duration":1000},{"time":33550,"freq":523,"duration":500},{"time":34100,"freq":440,"duration":500},{"time":34650,"freq":329,"duration":500},{"time":35200,"freq":392,"duration":500},{"time":35750,"freq":440,"duration":500},{"time":36300,"freq":523,"duration":500},{"time":36850,"freq":587,"duration":1000},{"time":37900,"freq":523,"duration":500},{"time":38450,"freq":440,"duration":500},{"time":39000,"freq":329,"duration":500},{"time":39550,"freq":392,"duration":500},{"time":40100,"freq":440,"duration":500},{"time":40650,"freq":523,"duration":500},{"time":41200,"freq":587,"duration":1000},{"time":42250,"freq":523,"duration":500},{"time":42800,"freq":440,"duration":500},{"time":43350,"freq":329,"duration":500},{"time":43900,"freq":392,"duration":500},{"time":44450,"freq":440,"duration":500},{"time":45000,"freq":523,"duration":500},{"time":45550,"freq":587,"duration":1000},{"time":46600,"freq":523,"duration":500},{"time":47150,"freq":440,"duration":500},{"time":47700,"freq":329,"duration":500},{"time":48250,"freq":392,"duration":500},{"time":48800,"freq":440,"duration":500},{"time":49350,"freq":523,"duration":500},{"time":49900,"freq":587,"duration":1000},{"time":50950,"freq":523,"duration":500},{"time":51500,"freq":440,"duration":500},{"time":52050,"freq":329,"duration":500},{"time":52600,"freq":392,"duration":500},{"time":53150,"freq":440,"duration":500},{"time":53700,"freq":523,"duration":500},{"time":54250,"freq":587,"duration":1000},{"time":55300,"freq":523,"duration":500},{"time":55850,"freq":440,"duration":500},{"time":56400,"freq":329,"duration":500},{"time":56950,"freq":392,"duration":500},{"time":57500,"freq":440,"duration":500},{"time":58050,"freq":523,"duration":500},{"time":58600,"freq":587,"duration":1000},{"time":59650,"freq":523,"duration":500},{"time":60200,"freq":440,"duration":500},{"time":60750,"freq":329,"duration":500},{"time":61300,"freq":392,"duration":500},{"time":61850,"freq":440,"duration":500},{"time":62400,"freq":523,"duration":500},{"time":62950,"freq":587,"duration":1000}]},"모리화":{"src":"world song/country-03.wav","durationMs":65000,"events":[{"time":4200,"freq":329,"duration":333},{"time":4583,"freq":329,"duration":333},{"time":4967,"freq":392,"duration":333},{"time":5350,"freq":440,"duration":333},{"time":5733,"freq":523,"duration":667},{"time":6450,"freq":440,"duration":333},{"time":6833,"freq":392,"duration":333},{"time":7217,"freq":329,"duration":667},{"time":7933,"freq":329,"duration":333},{"time":8317,"freq":329,"duration":333},{"time":8700,"freq":392,"duration":333},{"time":9083,"freq":440,"duration":333},{"time":9467,"freq":523,"duration":667},{"time":10183,"freq":440,"duration":333},{"time":10567,"freq":392,"duration":333},{"time":10950,"freq":329,"duration":667},{"time":11667,"freq":329,"duration":333},{"time":12050,"freq":329,"duration":333},{"time":12433,"freq":392,"duration":333},{"time":12817,"freq":440,"duration":333},{"time":13200,"freq":523,"duration":667},{"time":13917,"freq":440,"duration":333},{"time":14300,"freq":392,"duration":333},{"time":14683,"freq":329,"duration":667},{"time":15400,"freq":329,"duration":333},{"time":15783,"freq":329,"duration":333},{"time":16167,"freq":392,"duration":333},{"time":16550,"freq":440,"duration":333},{"time":16933,"freq":523,"duration":667},{"time":17650,"freq":440,"duration":333},{"time":18033,"freq":392,"duration":333},{"time":18417,"freq":329,"duration":667},{"time":19133,"freq":329,"duration":333},{"time":19517,"freq":329,"duration":333},{"time":19900,"freq":392,"duration":333},{"time":20283,"freq":440,"duration":333},{"time":20667,"freq":523,"duration":667},{"time":21383,"freq":440,"duration":333},{"time":21767,"freq":392,"duration":333},{"time":22150,"freq":329,"duration":667},{"time":22867,"freq":329,"duration":333},{"time":23250,"freq":329,"duration":333},{"time":23633,"freq":392,"duration":333},{"time":24017,"freq":440,"duration":333},{"time":24400,"freq":523,"duration":667},{"time":25117,"freq":440,"duration":333},{"time":25500,"freq":392,"duration":333},{"time":25883,"freq":329,"duration":667},{"time":26600,"freq":329,"duration":333},{"time":26983,"freq":329,"duration":333},{"time":27367,"freq":392,"duration":333},{"time":27750,"freq":440,"duration":333},{"time":28133,"freq":523,"duration":667},{"time":28850,"freq":440,"duration":333},{"time":29233,"freq":392,"duration":333},{"time":29617,"freq":329,"duration":667},{"time":30333,"freq":329,"duration":333},{"time":30717,"freq":329,"duration":333},{"time":31100,"freq":392,"duration":333},{"time":31483,"freq":440,"duration":333},{"time":31867,"freq":523,"duration":667},{"time":32583,"freq":440,"duration":333},{"time":32967,"freq":392,"duration":333},{"time":33350,"freq":329,"duration":667},{"time":34067,"freq":329,"duration":333},{"time":34450,"freq":329,"duration":333},{"time":34833,"freq":392,"duration":333},{"time":35217,"freq":440,"duration":333},{"time":35600,"freq":523,"duration":667},{"time":36317,"freq":440,"duration":333},{"time":36700,"freq":392,"duration":333},{"time":37083,"freq":329,"duration":667},{"time":37800,"freq":329,"duration":333},{"time":38183,"freq":329,"duration":333},{"time":38567,"freq":392,"duration":333},{"time":38950,"freq":440,"duration":333},{"time":39333,"freq":523,"duration":667},{"time":40050,"freq":440,"duration":333},{"time":40433,"freq":392,"duration":333},{"time":40817,"freq":329,"duration":667},{"time":41533,"freq":329,"duration":333},{"time":41917,"freq":329,"duration":333},{"time":42300,"freq":392,"duration":333},{"time":42683,"freq":440,"duration":333},{"time":43067,"freq":523,"duration":667},{"time":43783,"freq":440,"duration":333},{"time":44167,"freq":392,"duration":333},{"time":44550,"freq":329,"duration":667},{"time":45267,"freq":329,"duration":333},{"time":45650,"freq":329,"duration":333},{"time":46033,"freq":392,"duration":333},{"time":46417,"freq":440,"duration":333},{"time":46800,"freq":523,"duration":667},{"time":47517,"freq":440,"duration":333},{"time":47900,"freq":392,"duration":333},{"time":48283,"freq":329,"duration":667},{"time":49000,"freq":329,"duration":333},{"time":49383,"freq":329,"duration":333},{"time":49767,"freq":392,"duration":333},{"time":50150,"freq":440,"duration":333},{"time":50533,"freq":523,"duration":667},{"time":51250,"freq":440,"duration":333},{"time":51633,"freq":392,"duration":333},{"time":52017,"freq":329,"duration":667},{"time":52733,"freq":329,"duration":333},{"time":53117,"freq":329,"duration":333},{"time":53500,"freq":392,"duration":333},{"time":53883,"freq":440,"duration":333},{"time":54267,"freq":523,"duration":667},{"time":54983,"freq":440,"duration":333},{"time":55367,"freq":392,"duration":333},{"time":55750,"freq":329,"duration":667},{"time":56467,"freq":329,"duration":333},{"time":56850,"freq":329,"duration":333},{"time":57233,"freq":392,"duration":333},{"time":57617,"freq":440,"duration":333},{"time":58000,"freq":523,"duration":667},{"time":58717,"freq":440,"duration":333},{"time":59100,"freq":392,"duration":333},{"time":59483,"freq":329,"duration":667},{"time":60200,"freq":329,"duration":333},{"time":60583,"freq":329,"duration":333},{"time":60967,"freq":392,"duration":333},{"time":61350,"freq":440,"duration":333},{"time":61733,"freq":523,"duration":667},{"time":62450,"freq":440,"duration":333},{"time":62833,"freq":392,"duration":333},{"time":63217,"freq":329,"duration":667}]},"사쿠라 사쿠라":{"src":"world song/country-04.wav","durationMs":65000,"events":[{"time":4200,"freq":440,"duration":667},{"time":4917,"freq":440,"duration":667},{"time":5633,"freq":494,"duration":1333},{"time":7017,"freq":440,"duration":667},{"time":7733,"freq":440,"duration":667},{"time":8450,"freq":494,"duration":1333},{"time":9833,"freq":440,"duration":667},{"time":10550,"freq":494,"duration":667},{"time":11267,"freq":523,"duration":667},{"time":11983,"freq":440,"duration":667},{"time":12700,"freq":440,"duration":667},{"time":13417,"freq":494,"duration":1333},{"time":14800,"freq":440,"duration":667},{"time":15517,"freq":440,"duration":667},{"time":16233,"freq":494,"duration":1333},{"time":17617,"freq":440,"duration":667},{"time":18333,"freq":494,"duration":667},{"time":19050,"freq":523,"duration":667},{"time":19767,"freq":440,"duration":667},{"time":20483,"freq":440,"duration":667},{"time":21200,"freq":494,"duration":1333},{"time":22583,"freq":440,"duration":667},{"time":23300,"freq":440,"duration":667},{"time":24017,"freq":494,"duration":1333},{"time":25400,"freq":440,"duration":667},{"time":26117,"freq":494,"duration":667},{"time":26833,"freq":523,"duration":667},{"time":27550,"freq":440,"duration":667},{"time":28267,"freq":440,"duration":667},{"time":28983,"freq":494,"duration":1333},{"time":30367,"freq":440,"duration":667},{"time":31083,"freq":440,"duration":667},{"time":31800,"freq":494,"duration":1333},{"time":33183,"freq":440,"duration":667},{"time":33900,"freq":494,"duration":667},{"time":34617,"freq":523,"duration":667},{"time":35333,"freq":440,"duration":667},{"time":36050,"freq":440,"duration":667},{"time":36767,"freq":494,"duration":1333},{"time":38150,"freq":440,"duration":667},{"time":38867,"freq":440,"duration":667},{"time":39583,"freq":494,"duration":1333},{"time":40967,"freq":440,"duration":667},{"time":41683,"freq":494,"duration":667},{"time":42400,"freq":523,"duration":667},{"time":43117,"freq":440,"duration":667},{"time":43833,"freq":440,"duration":667},{"time":44550,"freq":494,"duration":1333},{"time":45933,"freq":440,"duration":667},{"time":46650,"freq":440,"duration":667},{"time":47367,"freq":494,"duration":1333},{"time":48750,"freq":440,"duration":667},{"time":49467,"freq":494,"duration":667},{"time":50183,"freq":523,"duration":667},{"time":50900,"freq":440,"duration":667},{"time":51617,"freq":440,"duration":667},{"time":52333,"freq":494,"duration":1333},{"time":53717,"freq":440,"duration":667},{"time":54433,"freq":440,"duration":667},{"time":55150,"freq":494,"duration":1333},{"time":56533,"freq":440,"duration":667},{"time":57250,"freq":494,"duration":667},{"time":57967,"freq":523,"duration":667},{"time":58683,"freq":440,"duration":667},{"time":59400,"freq":440,"duration":667},{"time":60117,"freq":494,"duration":1333},{"time":61500,"freq":440,"duration":667},{"time":62217,"freq":440,"duration":667},{"time":62933,"freq":494,"duration":1333}]},"망춘풍":{"src":"world song/country-05.wav","durationMs":65000,"events":[{"time":4200,"freq":392,"duration":667},{"time":4917,"freq":440,"duration":333},{"time":5300,"freq":392,"duration":333},{"time":5683,"freq":329,"duration":667},{"time":6400,"freq":293,"duration":667},{"time":7117,"freq":261,"duration":1333},{"time":8500,"freq":392,"duration":667},{"time":9217,"freq":440,"duration":333},{"time":9600,"freq":392,"duration":333},{"time":9983,"freq":329,"duration":667},{"time":10700,"freq":293,"duration":667},{"time":11417,"freq":261,"duration":1333},{"time":12800,"freq":392,"duration":667},{"time":13517,"freq":440,"duration":333},{"time":13900,"freq":392,"duration":333},{"time":14283,"freq":329,"duration":667},{"time":15000,"freq":293,"duration":667},{"time":15717,"freq":261,"duration":1333},{"time":17100,"freq":392,"duration":667},{"time":17817,"freq":440,"duration":333},{"time":18200,"freq":392,"duration":333},{"time":18583,"freq":329,"duration":667},{"time":19300,"freq":293,"duration":667},{"time":20017,"freq":261,"duration":1333},{"time":21400,"freq":392,"duration":667},{"time":22117,"freq":440,"duration":333},{"time":22500,"freq":392,"duration":333},{"time":22883,"freq":329,"duration":667},{"time":23600,"freq":293,"duration":667},{"time":24317,"freq":261,"duration":1333},{"time":25700,"freq":392,"duration":667},{"time":26417,"freq":440,"duration":333},{"time":26800,"freq":392,"duration":333},{"time":27183,"freq":329,"duration":667},{"time":27900,"freq":293,"duration":667},{"time":28617,"freq":261,"duration":1333},{"time":30000,"freq":392,"duration":667},{"time":30717,"freq":440,"duration":333},{"time":31100,"freq":392,"duration":333},{"time":31483,"freq":329,"duration":667},{"time":32200,"freq":293,"duration":667},{"time":32917,"freq":261,"duration":1333},{"time":34300,"freq":392,"duration":667},{"time":35017,"freq":440,"duration":333},{"time":35400,"freq":392,"duration":333},{"time":35783,"freq":329,"duration":667},{"time":36500,"freq":293,"duration":667},{"time":37217,"freq":261,"duration":1333},{"time":38600,"freq":392,"duration":667},{"time":39317,"freq":440,"duration":333},{"time":39700,"freq":392,"duration":333},{"time":40083,"freq":329,"duration":667},{"time":40800,"freq":293,"duration":667},{"time":41517,"freq":261,"duration":1333},{"time":42900,"freq":392,"duration":667},{"time":43617,"freq":440,"duration":333},{"time":44000,"freq":392,"duration":333},{"time":44383,"freq":329,"duration":667},{"time":45100,"freq":293,"duration":667},{"time":45817,"freq":261,"duration":1333},{"time":47200,"freq":392,"duration":667},{"time":47917,"freq":440,"duration":333},{"time":48300,"freq":392,"duration":333},{"time":48683,"freq":329,"duration":667},{"time":49400,"freq":293,"duration":667},{"time":50117,"freq":261,"duration":1333},{"time":51500,"freq":392,"duration":667},{"time":52217,"freq":440,"duration":333},{"time":52600,"freq":392,"duration":333},{"time":52983,"freq":329,"duration":667},{"time":53700,"freq":293,"duration":667},{"time":54417,"freq":261,"duration":1333},{"time":55800,"freq":392,"duration":667},{"time":56517,"freq":440,"duration":333},{"time":56900,"freq":392,"duration":333},{"time":57283,"freq":329,"duration":667},{"time":58000,"freq":293,"duration":667},{"time":58717,"freq":261,"duration":1333},{"time":60100,"freq":392,"duration":667},{"time":60817,"freq":440,"duration":333},{"time":61200,"freq":392,"duration":333},{"time":61583,"freq":329,"duration":667},{"time":62300,"freq":293,"duration":667},{"time":63017,"freq":261,"duration":1333}]},"홈 온 더 레인지":{"src":"world song/country-06.wav","durationMs":65000,"events":[{"time":4200,"freq":293,"duration":333},{"time":4583,"freq":293,"duration":333},{"time":4967,"freq":349,"duration":333},{"time":5350,"freq":392,"duration":333},{"time":5733,"freq":440,"duration":667},{"time":6450,"freq":392,"duration":333},{"time":6833,"freq":349,"duration":333},{"time":7217,"freq":293,"duration":1000},{"time":8267,"freq":293,"duration":333},{"time":8650,"freq":293,"duration":333},{"time":9033,"freq":349,"duration":333},{"time":9417,"freq":392,"duration":333},{"time":9800,"freq":440,"duration":667},{"time":10517,"freq":392,"duration":333},{"time":10900,"freq":349,"duration":333},{"time":11283,"freq":293,"duration":1000},{"time":12333,"freq":293,"duration":333},{"time":12717,"freq":293,"duration":333},{"time":13100,"freq":349,"duration":333},{"time":13483,"freq":392,"duration":333},{"time":13867,"freq":440,"duration":667},{"time":14583,"freq":392,"duration":333},{"time":14967,"freq":349,"duration":333},{"time":15350,"freq":293,"duration":1000},{"time":16400,"freq":293,"duration":333},{"time":16783,"freq":293,"duration":333},{"time":17167,"freq":349,"duration":333},{"time":17550,"freq":392,"duration":333},{"time":17933,"freq":440,"duration":667},{"time":18650,"freq":392,"duration":333},{"time":19033,"freq":349,"duration":333},{"time":19417,"freq":293,"duration":1000},{"time":20467,"freq":293,"duration":333},{"time":20850,"freq":293,"duration":333},{"time":21233,"freq":349,"duration":333},{"time":21617,"freq":392,"duration":333},{"time":22000,"freq":440,"duration":667},{"time":22717,"freq":392,"duration":333},{"time":23100,"freq":349,"duration":333},{"time":23483,"freq":293,"duration":1000},{"time":24533,"freq":293,"duration":333},{"time":24917,"freq":293,"duration":333},{"time":25300,"freq":349,"duration":333},{"time":25683,"freq":392,"duration":333},{"time":26067,"freq":440,"duration":667},{"time":26783,"freq":392,"duration":333},{"time":27167,"freq":349,"duration":333},{"time":27550,"freq":293,"duration":1000},{"time":28600,"freq":293,"duration":333},{"time":28983,"freq":293,"duration":333},{"time":29367,"freq":349,"duration":333},{"time":29750,"freq":392,"duration":333},{"time":30133,"freq":440,"duration":667},{"time":30850,"freq":392,"duration":333},{"time":31233,"freq":349,"duration":333},{"time":31617,"freq":293,"duration":1000},{"time":32667,"freq":293,"duration":333},{"time":33050,"freq":293,"duration":333},{"time":33433,"freq":349,"duration":333},{"time":33817,"freq":392,"duration":333},{"time":34200,"freq":440,"duration":667},{"time":34917,"freq":392,"duration":333},{"time":35300,"freq":349,"duration":333},{"time":35683,"freq":293,"duration":1000},{"time":36733,"freq":293,"duration":333},{"time":37117,"freq":293,"duration":333},{"time":37500,"freq":349,"duration":333},{"time":37883,"freq":392,"duration":333},{"time":38267,"freq":440,"duration":667},{"time":38983,"freq":392,"duration":333},{"time":39367,"freq":349,"duration":333},{"time":39750,"freq":293,"duration":1000},{"time":40800,"freq":293,"duration":333},{"time":41183,"freq":293,"duration":333},{"time":41567,"freq":349,"duration":333},{"time":41950,"freq":392,"duration":333},{"time":42333,"freq":440,"duration":667},{"time":43050,"freq":392,"duration":333},{"time":43433,"freq":349,"duration":333},{"time":43817,"freq":293,"duration":1000},{"time":44867,"freq":293,"duration":333},{"time":45250,"freq":293,"duration":333},{"time":45633,"freq":349,"duration":333},{"time":46017,"freq":392,"duration":333},{"time":46400,"freq":440,"duration":667},{"time":47117,"freq":392,"duration":333},{"time":47500,"freq":349,"duration":333},{"time":47883,"freq":293,"duration":1000},{"time":48933,"freq":293,"duration":333},{"time":49317,"freq":293,"duration":333},{"time":49700,"freq":349,"duration":333},{"time":50083,"freq":392,"duration":333},{"time":50467,"freq":440,"duration":667},{"time":51183,"freq":392,"duration":333},{"time":51567,"freq":349,"duration":333},{"time":51950,"freq":293,"duration":1000},{"time":53000,"freq":293,"duration":333},{"time":53383,"freq":293,"duration":333},{"time":53767,"freq":349,"duration":333},{"time":54150,"freq":392,"duration":333},{"time":54533,"freq":440,"duration":667},{"time":55250,"freq":392,"duration":333},{"time":55633,"freq":349,"duration":333},{"time":56017,"freq":293,"duration":1000},{"time":57067,"freq":293,"duration":333},{"time":57450,"freq":293,"duration":333},{"time":57833,"freq":349,"duration":333},{"time":58217,"freq":392,"duration":333},{"time":58600,"freq":440,"duration":667},{"time":59317,"freq":392,"duration":333},{"time":59700,"freq":349,"duration":333},{"time":60083,"freq":293,"duration":1000},{"time":61133,"freq":293,"duration":333},{"time":61517,"freq":293,"duration":333},{"time":61900,"freq":349,"duration":333},{"time":62283,"freq":392,"duration":333},{"time":62667,"freq":440,"duration":667},{"time":63383,"freq":392,"duration":333}]},"대니 보이":{"src":"world song/country-07.wav","durationMs":65000,"events":[{"time":4200,"freq":293,"duration":333},{"time":4583,"freq":370,"duration":333},{"time":4967,"freq":392,"duration":333},{"time":5350,"freq":370,"duration":333},{"time":5733,"freq":392,"duration":667},{"time":6450,"freq":440,"duration":333},{"time":6833,"freq":494,"duration":667},{"time":7550,"freq":440,"duration":333},{"time":7933,"freq":392,"duration":333},{"time":8317,"freq":370,"duration":333},{"time":8700,"freq":293,"duration":667},{"time":9417,"freq":293,"duration":333},{"time":9800,"freq":370,"duration":333},{"time":10183,"freq":392,"duration":333},{"time":10567,"freq":370,"duration":333},{"time":10950,"freq":392,"duration":667},{"time":11667,"freq":440,"duration":333},{"time":12050,"freq":494,"duration":667},{"time":12767,"freq":440,"duration":333},{"time":13150,"freq":392,"duration":333},{"time":13533,"freq":370,"duration":333},{"time":13917,"freq":293,"duration":667},{"time":14633,"freq":293,"duration":333},{"time":15017,"freq":370,"duration":333},{"time":15400,"freq":392,"duration":333},{"time":15783,"freq":370,"duration":333},{"time":16167,"freq":392,"duration":667},{"time":16883,"freq":440,"duration":333},{"time":17267,"freq":494,"duration":667},{"time":17983,"freq":440,"duration":333},{"time":18367,"freq":392,"duration":333},{"time":18750,"freq":370,"duration":333},{"time":19133,"freq":293,"duration":667},{"time":19850,"freq":293,"duration":333},{"time":20233,"freq":370,"duration":333},{"time":20617,"freq":392,"duration":333},{"time":21000,"freq":370,"duration":333},{"time":21383,"freq":392,"duration":667},{"time":22100,"freq":440,"duration":333},{"time":22483,"freq":494,"duration":667},{"time":23200,"freq":440,"duration":333},{"time":23583,"freq":392,"duration":333},{"time":23967,"freq":370,"duration":333},{"time":24350,"freq":293,"duration":667},{"time":25067,"freq":293,"duration":333},{"time":25450,"freq":370,"duration":333},{"time":25833,"freq":392,"duration":333},{"time":26217,"freq":370,"duration":333},{"time":26600,"freq":392,"duration":667},{"time":27317,"freq":440,"duration":333},{"time":27700,"freq":494,"duration":667},{"time":28417,"freq":440,"duration":333},{"time":28800,"freq":392,"duration":333},{"time":29183,"freq":370,"duration":333},{"time":29567,"freq":293,"duration":667},{"time":30283,"freq":293,"duration":333},{"time":30667,"freq":370,"duration":333},{"time":31050,"freq":392,"duration":333},{"time":31433,"freq":370,"duration":333},{"time":31817,"freq":392,"duration":667},{"time":32533,"freq":440,"duration":333},{"time":32917,"freq":494,"duration":667},{"time":33633,"freq":440,"duration":333},{"time":34017,"freq":392,"duration":333},{"time":34400,"freq":370,"duration":333},{"time":34783,"freq":293,"duration":667},{"time":35500,"freq":293,"duration":333},{"time":35883,"freq":370,"duration":333},{"time":36267,"freq":392,"duration":333},{"time":36650,"freq":370,"duration":333},{"time":37033,"freq":392,"duration":667},{"time":37750,"freq":440,"duration":333},{"time":38133,"freq":494,"duration":667},{"time":38850,"freq":440,"duration":333},{"time":39233,"freq":392,"duration":333},{"time":39617,"freq":370,"duration":333},{"time":40000,"freq":293,"duration":667},{"time":40717,"freq":293,"duration":333},{"time":41100,"freq":370,"duration":333},{"time":41483,"freq":392,"duration":333},{"time":41867,"freq":370,"duration":333},{"time":42250,"freq":392,"duration":667},{"time":42967,"freq":440,"duration":333},{"time":43350,"freq":494,"duration":667},{"time":44067,"freq":440,"duration":333},{"time":44450,"freq":392,"duration":333},{"time":44833,"freq":370,"duration":333},{"time":45217,"freq":293,"duration":667},{"time":45933,"freq":293,"duration":333},{"time":46317,"freq":370,"duration":333},{"time":46700,"freq":392,"duration":333},{"time":47083,"freq":370,"duration":333},{"time":47467,"freq":392,"duration":667},{"time":48183,"freq":440,"duration":333},{"time":48567,"freq":494,"duration":667},{"time":49283,"freq":440,"duration":333},{"time":49667,"freq":392,"duration":333},{"time":50050,"freq":370,"duration":333},{"time":50433,"freq":293,"duration":667},{"time":51150,"freq":293,"duration":333},{"time":51533,"freq":370,"duration":333},{"time":51917,"freq":392,"duration":333},{"time":52300,"freq":370,"duration":333},{"time":52683,"freq":392,"duration":667},{"time":53400,"freq":440,"duration":333},{"time":53783,"freq":494,"duration":667},{"time":54500,"freq":440,"duration":333},{"time":54883,"freq":392,"duration":333},{"time":55267,"freq":370,"duration":333},{"time":55650,"freq":293,"duration":667},{"time":56367,"freq":293,"duration":333},{"time":56750,"freq":370,"duration":333},{"time":57133,"freq":392,"duration":333},{"time":57517,"freq":370,"duration":333},{"time":57900,"freq":392,"duration":667},{"time":58617,"freq":440,"duration":333},{"time":59000,"freq":494,"duration":667},{"time":59717,"freq":440,"duration":333},{"time":60100,"freq":392,"duration":333},{"time":60483,"freq":370,"duration":333},{"time":60867,"freq":293,"duration":667},{"time":61583,"freq":293,"duration":333},{"time":61967,"freq":370,"duration":333},{"time":62350,"freq":392,"duration":333},{"time":62733,"freq":370,"duration":333},{"time":63117,"freq":392,"duration":667}]},"붉은 강 골짜기":{"src":"world song/country-08.wav","durationMs":65000,"events":[{"time":4200,"freq":261,"duration":667},{"time":4917,"freq":329,"duration":333},{"time":5300,"freq":392,"duration":333},{"time":5683,"freq":523,"duration":667},{"time":6400,"freq":523,"duration":333},{"time":6783,"freq":494,"duration":333},{"time":7167,"freq":440,"duration":667},{"time":7883,"freq":261,"duration":667},{"time":8600,"freq":329,"duration":333},{"time":8983,"freq":392,"duration":333},{"time":9367,"freq":523,"duration":667},{"time":10083,"freq":523,"duration":333},{"time":10467,"freq":494,"duration":333},{"time":10850,"freq":440,"duration":667},{"time":11567,"freq":261,"duration":667},{"time":12283,"freq":329,"duration":333},{"time":12667,"freq":392,"duration":333},{"time":13050,"freq":523,"duration":667},{"time":13767,"freq":523,"duration":333},{"time":14150,"freq":494,"duration":333},{"time":14533,"freq":440,"duration":667},{"time":15250,"freq":261,"duration":667},{"time":15967,"freq":329,"duration":333},{"time":16350,"freq":392,"duration":333},{"time":16733,"freq":523,"duration":667},{"time":17450,"freq":523,"duration":333},{"time":17833,"freq":494,"duration":333},{"time":18217,"freq":440,"duration":667},{"time":18933,"freq":261,"duration":667},{"time":19650,"freq":329,"duration":333},{"time":20033,"freq":392,"duration":333},{"time":20417,"freq":523,"duration":667},{"time":21133,"freq":523,"duration":333},{"time":21517,"freq":494,"duration":333},{"time":21900,"freq":440,"duration":667},{"time":22617,"freq":261,"duration":667},{"time":23333,"freq":329,"duration":333},{"time":23717,"freq":392,"duration":333},{"time":24100,"freq":523,"duration":667},{"time":24817,"freq":523,"duration":333},{"time":25200,"freq":494,"duration":333},{"time":25583,"freq":440,"duration":667},{"time":26300,"freq":261,"duration":667},{"time":27017,"freq":329,"duration":333},{"time":27400,"freq":392,"duration":333},{"time":27783,"freq":523,"duration":667},{"time":28500,"freq":523,"duration":333},{"time":28883,"freq":494,"duration":333},{"time":29267,"freq":440,"duration":667},{"time":29983,"freq":261,"duration":667},{"time":30700,"freq":329,"duration":333},{"time":31083,"freq":392,"duration":333},{"time":31467,"freq":523,"duration":667},{"time":32183,"freq":523,"duration":333},{"time":32567,"freq":494,"duration":333},{"time":32950,"freq":440,"duration":667},{"time":33667,"freq":261,"duration":667},{"time":34383,"freq":329,"duration":333},{"time":34767,"freq":392,"duration":333},{"time":35150,"freq":523,"duration":667},{"time":35867,"freq":523,"duration":333},{"time":36250,"freq":494,"duration":333},{"time":36633,"freq":440,"duration":667},{"time":37350,"freq":261,"duration":667},{"time":38067,"freq":329,"duration":333},{"time":38450,"freq":392,"duration":333},{"time":38833,"freq":523,"duration":667},{"time":39550,"freq":523,"duration":333},{"time":39933,"freq":494,"duration":333},{"time":40317,"freq":440,"duration":667},{"time":41033,"freq":261,"duration":667},{"time":41750,"freq":329,"duration":333},{"time":42133,"freq":392,"duration":333},{"time":42517,"freq":523,"duration":667},{"time":43233,"freq":523,"duration":333},{"time":43617,"freq":494,"duration":333},{"time":44000,"freq":440,"duration":667},{"time":44717,"freq":261,"duration":667},{"time":45433,"freq":329,"duration":333},{"time":45817,"freq":392,"duration":333},{"time":46200,"freq":523,"duration":667},{"time":46917,"freq":523,"duration":333},{"time":47300,"freq":494,"duration":333},{"time":47683,"freq":440,"duration":667},{"time":48400,"freq":261,"duration":667},{"time":49117,"freq":329,"duration":333},{"time":49500,"freq":392,"duration":333},{"time":49883,"freq":523,"duration":667},{"time":50600,"freq":523,"duration":333},{"time":50983,"freq":494,"duration":333},{"time":51367,"freq":440,"duration":667},{"time":52083,"freq":261,"duration":667},{"time":52800,"freq":329,"duration":333},{"time":53183,"freq":392,"duration":333},{"time":53567,"freq":523,"duration":667},{"time":54283,"freq":523,"duration":333},{"time":54667,"freq":494,"duration":333},{"time":55050,"freq":440,"duration":667},{"time":55767,"freq":261,"duration":667},{"time":56483,"freq":329,"duration":333},{"time":56867,"freq":392,"duration":333},{"time":57250,"freq":523,"duration":667},{"time":57967,"freq":523,"duration":333},{"time":58350,"freq":494,"duration":333},{"time":58733,"freq":440,"duration":667},{"time":59450,"freq":261,"duration":667},{"time":60167,"freq":329,"duration":333},{"time":60550,"freq":392,"duration":333},{"time":60933,"freq":523,"duration":667},{"time":61650,"freq":523,"duration":333},{"time":62033,"freq":494,"duration":333},{"time":62417,"freq":440,"duration":667},{"time":63133,"freq":261,"duration":667}]},"월칭 마틸다":{"src":"world song/country-09.wav","durationMs":65000,"events":[{"time":4200,"freq":261,"duration":333},{"time":4583,"freq":329,"duration":333},{"time":4967,"freq":392,"duration":333},{"time":5350,"freq":523,"duration":667},{"time":6067,"freq":440,"duration":667},{"time":6783,"freq":392,"duration":333},{"time":7167,"freq":349,"duration":333},{"time":7550,"freq":293,"duration":667},{"time":8267,"freq":261,"duration":333},{"time":8650,"freq":329,"duration":333},{"time":9033,"freq":392,"duration":333},{"time":9417,"freq":523,"duration":667},{"time":10133,"freq":440,"duration":667},{"time":10850,"freq":392,"duration":333},{"time":11233,"freq":349,"duration":333},{"time":11617,"freq":293,"duration":667},{"time":12333,"freq":261,"duration":333},{"time":12717,"freq":329,"duration":333},{"time":13100,"freq":392,"duration":333},{"time":13483,"freq":523,"duration":667},{"time":14200,"freq":440,"duration":667},{"time":14917,"freq":392,"duration":333},{"time":15300,"freq":349,"duration":333},{"time":15683,"freq":293,"duration":667},{"time":16400,"freq":261,"duration":333},{"time":16783,"freq":329,"duration":333},{"time":17167,"freq":392,"duration":333},{"time":17550,"freq":523,"duration":667},{"time":18267,"freq":440,"duration":667},{"time":18983,"freq":392,"duration":333},{"time":19367,"freq":349,"duration":333},{"time":19750,"freq":293,"duration":667},{"time":20467,"freq":261,"duration":333},{"time":20850,"freq":329,"duration":333},{"time":21233,"freq":392,"duration":333},{"time":21617,"freq":523,"duration":667},{"time":22333,"freq":440,"duration":667},{"time":23050,"freq":392,"duration":333},{"time":23433,"freq":349,"duration":333},{"time":23817,"freq":293,"duration":667},{"time":24533,"freq":261,"duration":333},{"time":24917,"freq":329,"duration":333},{"time":25300,"freq":392,"duration":333},{"time":25683,"freq":523,"duration":667},{"time":26400,"freq":440,"duration":667},{"time":27117,"freq":392,"duration":333},{"time":27500,"freq":349,"duration":333},{"time":27883,"freq":293,"duration":667},{"time":28600,"freq":261,"duration":333},{"time":28983,"freq":329,"duration":333},{"time":29367,"freq":392,"duration":333},{"time":29750,"freq":523,"duration":667},{"time":30467,"freq":440,"duration":667},{"time":31183,"freq":392,"duration":333},{"time":31567,"freq":349,"duration":333},{"time":31950,"freq":293,"duration":667},{"time":32667,"freq":261,"duration":333},{"time":33050,"freq":329,"duration":333},{"time":33433,"freq":392,"duration":333},{"time":33817,"freq":523,"duration":667},{"time":34533,"freq":440,"duration":667},{"time":35250,"freq":392,"duration":333},{"time":35633,"freq":349,"duration":333},{"time":36017,"freq":293,"duration":667},{"time":36733,"freq":261,"duration":333},{"time":37117,"freq":329,"duration":333},{"time":37500,"freq":392,"duration":333},{"time":37883,"freq":523,"duration":667},{"time":38600,"freq":440,"duration":667},{"time":39317,"freq":392,"duration":333},{"time":39700,"freq":349,"duration":333},{"time":40083,"freq":293,"duration":667},{"time":40800,"freq":261,"duration":333},{"time":41183,"freq":329,"duration":333},{"time":41567,"freq":392,"duration":333},{"time":41950,"freq":523,"duration":667},{"time":42667,"freq":440,"duration":667},{"time":43383,"freq":392,"duration":333},{"time":43767,"freq":349,"duration":333},{"time":44150,"freq":293,"duration":667},{"time":44867,"freq":261,"duration":333},{"time":45250,"freq":329,"duration":333},{"time":45633,"freq":392,"duration":333},{"time":46017,"freq":523,"duration":667},{"time":46733,"freq":440,"duration":667},{"time":47450,"freq":392,"duration":333},{"time":47833,"freq":349,"duration":333},{"time":48217,"freq":293,"duration":667},{"time":48933,"freq":261,"duration":333},{"time":49317,"freq":329,"duration":333},{"time":49700,"freq":392,"duration":333},{"time":50083,"freq":523,"duration":667},{"time":50800,"freq":440,"duration":667},{"time":51517,"freq":392,"duration":333},{"time":51900,"freq":349,"duration":333},{"time":52283,"freq":293,"duration":667},{"time":53000,"freq":261,"duration":333},{"time":53383,"freq":329,"duration":333},{"time":53767,"freq":392,"duration":333},{"time":54150,"freq":523,"duration":667},{"time":54867,"freq":440,"duration":667},{"time":55583,"freq":392,"duration":333},{"time":55967,"freq":349,"duration":333},{"time":56350,"freq":293,"duration":667},{"time":57067,"freq":261,"duration":333},{"time":57450,"freq":329,"duration":333},{"time":57833,"freq":392,"duration":333},{"time":58217,"freq":523,"duration":667},{"time":58933,"freq":440,"duration":667},{"time":59650,"freq":392,"duration":333},{"time":60033,"freq":349,"duration":333},{"time":60417,"freq":293,"duration":667},{"time":61133,"freq":261,"duration":333},{"time":61517,"freq":329,"duration":333},{"time":61900,"freq":392,"duration":333},{"time":62283,"freq":523,"duration":667},{"time":63000,"freq":440,"duration":667}]},"로렐라이":{"src":"world song/country-10.wav","durationMs":65000,"events":[{"time":4200,"freq":392,"duration":500},{"time":4750,"freq":329,"duration":500},{"time":5300,"freq":392,"duration":500},{"time":5850,"freq":523,"duration":1000},{"time":6900,"freq":494,"duration":500},{"time":7450,"freq":440,"duration":500},{"time":8000,"freq":392,"duration":1000},{"time":9050,"freq":392,"duration":500},{"time":9600,"freq":329,"duration":500},{"time":10150,"freq":392,"duration":500},{"time":10700,"freq":523,"duration":1000},{"time":11750,"freq":494,"duration":500},{"time":12300,"freq":440,"duration":500},{"time":12850,"freq":392,"duration":1000},{"time":13900,"freq":392,"duration":500},{"time":14450,"freq":329,"duration":500},{"time":15000,"freq":392,"duration":500},{"time":15550,"freq":523,"duration":1000},{"time":16600,"freq":494,"duration":500},{"time":17150,"freq":440,"duration":500},{"time":17700,"freq":392,"duration":1000},{"time":18750,"freq":392,"duration":500},{"time":19300,"freq":329,"duration":500},{"time":19850,"freq":392,"duration":500},{"time":20400,"freq":523,"duration":1000},{"time":21450,"freq":494,"duration":500},{"time":22000,"freq":440,"duration":500},{"time":22550,"freq":392,"duration":1000},{"time":23600,"freq":392,"duration":500},{"time":24150,"freq":329,"duration":500},{"time":24700,"freq":392,"duration":500},{"time":25250,"freq":523,"duration":1000},{"time":26300,"freq":494,"duration":500},{"time":26850,"freq":440,"duration":500},{"time":27400,"freq":392,"duration":1000},{"time":28450,"freq":392,"duration":500},{"time":29000,"freq":329,"duration":500},{"time":29550,"freq":392,"duration":500},{"time":30100,"freq":523,"duration":1000},{"time":31150,"freq":494,"duration":500},{"time":31700,"freq":440,"duration":500},{"time":32250,"freq":392,"duration":1000},{"time":33300,"freq":392,"duration":500},{"time":33850,"freq":329,"duration":500},{"time":34400,"freq":392,"duration":500},{"time":34950,"freq":523,"duration":1000},{"time":36000,"freq":494,"duration":500},{"time":36550,"freq":440,"duration":500},{"time":37100,"freq":392,"duration":1000},{"time":38150,"freq":392,"duration":500},{"time":38700,"freq":329,"duration":500},{"time":39250,"freq":392,"duration":500},{"time":39800,"freq":523,"duration":1000},{"time":40850,"freq":494,"duration":500},{"time":41400,"freq":440,"duration":500},{"time":41950,"freq":392,"duration":1000},{"time":43000,"freq":392,"duration":500},{"time":43550,"freq":329,"duration":500},{"time":44100,"freq":392,"duration":500},{"time":44650,"freq":523,"duration":1000},{"time":45700,"freq":494,"duration":500},{"time":46250,"freq":440,"duration":500},{"time":46800,"freq":392,"duration":1000},{"time":47850,"freq":392,"duration":500},{"time":48400,"freq":329,"duration":500},{"time":48950,"freq":392,"duration":500},{"time":49500,"freq":523,"duration":1000},{"time":50550,"freq":494,"duration":500},{"time":51100,"freq":440,"duration":500},{"time":51650,"freq":392,"duration":1000},{"time":52700,"freq":392,"duration":500},{"time":53250,"freq":329,"duration":500},{"time":53800,"freq":392,"duration":500},{"time":54350,"freq":523,"duration":1000},{"time":55400,"freq":494,"duration":500},{"time":55950,"freq":440,"duration":500},{"time":56500,"freq":392,"duration":1000},{"time":57550,"freq":392,"duration":500},{"time":58100,"freq":329,"duration":500},{"time":58650,"freq":392,"duration":500},{"time":59200,"freq":523,"duration":1000},{"time":60250,"freq":494,"duration":500},{"time":60800,"freq":440,"duration":500},{"time":61350,"freq":392,"duration":1000},{"time":62400,"freq":392,"duration":500},{"time":62950,"freq":329,"duration":500}]},"하바 나길라":{"src":"world song/country-11.wav","durationMs":65000,"events":[{"time":4200,"freq":293,"duration":333},{"time":4583,"freq":293,"duration":333},{"time":4967,"freq":370,"duration":667},{"time":5683,"freq":370,"duration":667},{"time":6400,"freq":349,"duration":333},{"time":6783,"freq":293,"duration":333},{"time":7167,"freq":349,"duration":667},{"time":7883,"freq":293,"duration":333},{"time":8267,"freq":293,"duration":333},{"time":8650,"freq":370,"duration":667},{"time":9367,"freq":370,"duration":667},{"time":10083,"freq":349,"duration":333},{"time":10467,"freq":293,"duration":333},{"time":10850,"freq":349,"duration":667},{"time":11567,"freq":293,"duration":333},{"time":11950,"freq":293,"duration":333},{"time":12333,"freq":370,"duration":667},{"time":13050,"freq":370,"duration":667},{"time":13767,"freq":349,"duration":333},{"time":14150,"freq":293,"duration":333},{"time":14533,"freq":349,"duration":667},{"time":15250,"freq":293,"duration":333},{"time":15633,"freq":293,"duration":333},{"time":16017,"freq":370,"duration":667},{"time":16733,"freq":370,"duration":667},{"time":17450,"freq":349,"duration":333},{"time":17833,"freq":293,"duration":333},{"time":18217,"freq":349,"duration":667},{"time":18933,"freq":293,"duration":333},{"time":19317,"freq":293,"duration":333},{"time":19700,"freq":370,"duration":667},{"time":20417,"freq":370,"duration":667},{"time":21133,"freq":349,"duration":333},{"time":21517,"freq":293,"duration":333},{"time":21900,"freq":349,"duration":667},{"time":22617,"freq":293,"duration":333},{"time":23000,"freq":293,"duration":333},{"time":23383,"freq":370,"duration":667},{"time":24100,"freq":370,"duration":667},{"time":24817,"freq":349,"duration":333},{"time":25200,"freq":293,"duration":333},{"time":25583,"freq":349,"duration":667},{"time":26300,"freq":293,"duration":333},{"time":26683,"freq":293,"duration":333},{"time":27067,"freq":370,"duration":667},{"time":27783,"freq":370,"duration":667},{"time":28500,"freq":349,"duration":333},{"time":28883,"freq":293,"duration":333},{"time":29267,"freq":349,"duration":667},{"time":29983,"freq":293,"duration":333},{"time":30367,"freq":293,"duration":333},{"time":30750,"freq":370,"duration":667},{"time":31467,"freq":370,"duration":667},{"time":32183,"freq":349,"duration":333},{"time":32567,"freq":293,"duration":333},{"time":32950,"freq":349,"duration":667},{"time":33667,"freq":293,"duration":333},{"time":34050,"freq":293,"duration":333},{"time":34433,"freq":370,"duration":667},{"time":35150,"freq":370,"duration":667},{"time":35867,"freq":349,"duration":333},{"time":36250,"freq":293,"duration":333},{"time":36633,"freq":349,"duration":667},{"time":37350,"freq":293,"duration":333},{"time":37733,"freq":293,"duration":333},{"time":38117,"freq":370,"duration":667},{"time":38833,"freq":370,"duration":667},{"time":39550,"freq":349,"duration":333},{"time":39933,"freq":293,"duration":333},{"time":40317,"freq":349,"duration":667},{"time":41033,"freq":293,"duration":333},{"time":41417,"freq":293,"duration":333},{"time":41800,"freq":370,"duration":667},{"time":42517,"freq":370,"duration":667},{"time":43233,"freq":349,"duration":333},{"time":43617,"freq":293,"duration":333},{"time":44000,"freq":349,"duration":667},{"time":44717,"freq":293,"duration":333},{"time":45100,"freq":293,"duration":333},{"time":45483,"freq":370,"duration":667},{"time":46200,"freq":370,"duration":667},{"time":46917,"freq":349,"duration":333},{"time":47300,"freq":293,"duration":333},{"time":47683,"freq":349,"duration":667},{"time":48400,"freq":293,"duration":333},{"time":48783,"freq":293,"duration":333},{"time":49167,"freq":370,"duration":667},{"time":49883,"freq":370,"duration":667},{"time":50600,"freq":349,"duration":333},{"time":50983,"freq":293,"duration":333},{"time":51367,"freq":349,"duration":667},{"time":52083,"freq":293,"duration":333},{"time":52467,"freq":293,"duration":333},{"time":52850,"freq":370,"duration":667},{"time":53567,"freq":370,"duration":667},{"time":54283,"freq":349,"duration":333},{"time":54667,"freq":293,"duration":333},{"time":55050,"freq":349,"duration":667},{"time":55767,"freq":293,"duration":333},{"time":56150,"freq":293,"duration":333},{"time":56533,"freq":370,"duration":667},{"time":57250,"freq":370,"duration":667},{"time":57967,"freq":349,"duration":333},{"time":58350,"freq":293,"duration":333},{"time":58733,"freq":349,"duration":667},{"time":59450,"freq":293,"duration":333},{"time":59833,"freq":293,"duration":333},{"time":60217,"freq":370,"duration":667},{"time":60933,"freq":370,"duration":667},{"time":61650,"freq":349,"duration":333},{"time":62033,"freq":293,"duration":333},{"time":62417,"freq":349,"duration":667},{"time":63133,"freq":293,"duration":333}]},"에델바이스":{"src":"world song/country-12.wav","durationMs":65000,"events":[{"time":4200,"freq":329,"duration":667},{"time":4917,"freq":392,"duration":333},{"time":5300,"freq":587,"duration":1000},{"time":6350,"freq":523,"duration":667},{"time":7067,"freq":392,"duration":333},{"time":7450,"freq":349,"duration":1000},{"time":8500,"freq":329,"duration":667},{"time":9217,"freq":329,"duration":333},{"time":9600,"freq":329,"duration":333},{"time":9983,"freq":349,"duration":333},{"time":10367,"freq":392,"duration":333},{"time":10750,"freq":440,"duration":1000},{"time":11800,"freq":329,"duration":667},{"time":12517,"freq":392,"duration":333},{"time":12900,"freq":587,"duration":1000},{"time":13950,"freq":523,"duration":667},{"time":14667,"freq":392,"duration":333},{"time":15050,"freq":349,"duration":1000},{"time":16100,"freq":329,"duration":667},{"time":16817,"freq":329,"duration":333},{"time":17200,"freq":329,"duration":333},{"time":17583,"freq":349,"duration":333},{"time":17967,"freq":392,"duration":333},{"time":18350,"freq":440,"duration":1000},{"time":19400,"freq":329,"duration":667},{"time":20117,"freq":392,"duration":333},{"time":20500,"freq":587,"duration":1000},{"time":21550,"freq":523,"duration":667},{"time":22267,"freq":392,"duration":333},{"time":22650,"freq":349,"duration":1000},{"time":23700,"freq":329,"duration":667},{"time":24417,"freq":329,"duration":333},{"time":24800,"freq":329,"duration":333},{"time":25183,"freq":349,"duration":333},{"time":25567,"freq":392,"duration":333},{"time":25950,"freq":440,"duration":1000},{"time":27000,"freq":329,"duration":667},{"time":27717,"freq":392,"duration":333},{"time":28100,"freq":587,"duration":1000},{"time":29150,"freq":523,"duration":667},{"time":29867,"freq":392,"duration":333},{"time":30250,"freq":349,"duration":1000},{"time":31300,"freq":329,"duration":667},{"time":32017,"freq":329,"duration":333},{"time":32400,"freq":329,"duration":333},{"time":32783,"freq":349,"duration":333},{"time":33167,"freq":392,"duration":333},{"time":33550,"freq":440,"duration":1000},{"time":34600,"freq":329,"duration":667},{"time":35317,"freq":392,"duration":333},{"time":35700,"freq":587,"duration":1000},{"time":36750,"freq":523,"duration":667},{"time":37467,"freq":392,"duration":333},{"time":37850,"freq":349,"duration":1000},{"time":38900,"freq":329,"duration":667},{"time":39617,"freq":329,"duration":333},{"time":40000,"freq":329,"duration":333},{"time":40383,"freq":349,"duration":333},{"time":40767,"freq":392,"duration":333},{"time":41150,"freq":440,"duration":1000},{"time":42200,"freq":329,"duration":667},{"time":42917,"freq":392,"duration":333},{"time":43300,"freq":587,"duration":1000},{"time":44350,"freq":523,"duration":667},{"time":45067,"freq":392,"duration":333},{"time":45450,"freq":349,"duration":1000},{"time":46500,"freq":329,"duration":667},{"time":47217,"freq":329,"duration":333},{"time":47600,"freq":329,"duration":333},{"time":47983,"freq":349,"duration":333},{"time":48367,"freq":392,"duration":333},{"time":48750,"freq":440,"duration":1000},{"time":49800,"freq":329,"duration":667},{"time":50517,"freq":392,"duration":333},{"time":50900,"freq":587,"duration":1000},{"time":51950,"freq":523,"duration":667},{"time":52667,"freq":392,"duration":333},{"time":53050,"freq":349,"duration":1000},{"time":54100,"freq":329,"duration":667},{"time":54817,"freq":329,"duration":333},{"time":55200,"freq":329,"duration":333},{"time":55583,"freq":349,"duration":333},{"time":55967,"freq":392,"duration":333},{"time":56350,"freq":440,"duration":1000},{"time":57400,"freq":329,"duration":667},{"time":58117,"freq":392,"duration":333},{"time":58500,"freq":587,"duration":1000},{"time":59550,"freq":523,"duration":667},{"time":60267,"freq":392,"duration":333},{"time":60650,"freq":349,"duration":1000},{"time":61700,"freq":329,"duration":667},{"time":62417,"freq":329,"duration":333},{"time":62800,"freq":329,"duration":333},{"time":63183,"freq":349,"duration":333}]},"쇼팽 마주르카":{"src":"world song/country-13.wav","durationMs":65000,"events":[{"time":4200,"freq":392,"duration":500},{"time":4750,"freq":494,"duration":500},{"time":5300,"freq":587,"duration":500},{"time":5850,"freq":659,"duration":1000},{"time":6900,"freq":587,"duration":500},{"time":7450,"freq":494,"duration":500},{"time":8000,"freq":392,"duration":500},{"time":8550,"freq":494,"duration":500},{"time":9100,"freq":587,"duration":500},{"time":9650,"freq":659,"duration":1000},{"time":10700,"freq":587,"duration":500},{"time":11250,"freq":494,"duration":500},{"time":11800,"freq":392,"duration":500},{"time":12350,"freq":494,"duration":500},{"time":12900,"freq":587,"duration":500},{"time":13450,"freq":659,"duration":1000},{"time":14500,"freq":587,"duration":500},{"time":15050,"freq":494,"duration":500},{"time":15600,"freq":392,"duration":500},{"time":16150,"freq":494,"duration":500},{"time":16700,"freq":587,"duration":500},{"time":17250,"freq":659,"duration":1000},{"time":18300,"freq":587,"duration":500},{"time":18850,"freq":494,"duration":500},{"time":19400,"freq":392,"duration":500},{"time":19950,"freq":494,"duration":500},{"time":20500,"freq":587,"duration":500},{"time":21050,"freq":659,"duration":1000},{"time":22100,"freq":587,"duration":500},{"time":22650,"freq":494,"duration":500},{"time":23200,"freq":392,"duration":500},{"time":23750,"freq":494,"duration":500},{"time":24300,"freq":587,"duration":500},{"time":24850,"freq":659,"duration":1000},{"time":25900,"freq":587,"duration":500},{"time":26450,"freq":494,"duration":500},{"time":27000,"freq":392,"duration":500},{"time":27550,"freq":494,"duration":500},{"time":28100,"freq":587,"duration":500},{"time":28650,"freq":659,"duration":1000},{"time":29700,"freq":587,"duration":500},{"time":30250,"freq":494,"duration":500},{"time":30800,"freq":392,"duration":500},{"time":31350,"freq":494,"duration":500},{"time":31900,"freq":587,"duration":500},{"time":32450,"freq":659,"duration":1000},{"time":33500,"freq":587,"duration":500},{"time":34050,"freq":494,"duration":500},{"time":34600,"freq":392,"duration":500},{"time":35150,"freq":494,"duration":500},{"time":35700,"freq":587,"duration":500},{"time":36250,"freq":659,"duration":1000},{"time":37300,"freq":587,"duration":500},{"time":37850,"freq":494,"duration":500},{"time":38400,"freq":392,"duration":500},{"time":38950,"freq":494,"duration":500},{"time":39500,"freq":587,"duration":500},{"time":40050,"freq":659,"duration":1000},{"time":41100,"freq":587,"duration":500},{"time":41650,"freq":494,"duration":500},{"time":42200,"freq":392,"duration":500},{"time":42750,"freq":494,"duration":500},{"time":43300,"freq":587,"duration":500},{"time":43850,"freq":659,"duration":1000},{"time":44900,"freq":587,"duration":500},{"time":45450,"freq":494,"duration":500},{"time":46000,"freq":392,"duration":500},{"time":46550,"freq":494,"duration":500},{"time":47100,"freq":587,"duration":500},{"time":47650,"freq":659,"duration":1000},{"time":48700,"freq":587,"duration":500},{"time":49250,"freq":494,"duration":500},{"time":49800,"freq":392,"duration":500},{"time":50350,"freq":494,"duration":500},{"time":50900,"freq":587,"duration":500},{"time":51450,"freq":659,"duration":1000},{"time":52500,"freq":587,"duration":500},{"time":53050,"freq":494,"duration":500},{"time":53600,"freq":392,"duration":500},{"time":54150,"freq":494,"duration":500},{"time":54700,"freq":587,"duration":500},{"time":55250,"freq":659,"duration":1000},{"time":56300,"freq":587,"duration":500},{"time":56850,"freq":494,"duration":500},{"time":57400,"freq":392,"duration":500},{"time":57950,"freq":494,"duration":500},{"time":58500,"freq":587,"duration":500},{"time":59050,"freq":659,"duration":1000},{"time":60100,"freq":587,"duration":500},{"time":60650,"freq":494,"duration":500},{"time":61200,"freq":392,"duration":500},{"time":61750,"freq":494,"duration":500},{"time":62300,"freq":587,"duration":500},{"time":62850,"freq":659,"duration":1000}]},"카튜샤":{"src":"world song/country-14.wav","durationMs":65000,"events":[{"time":4200,"freq":220,"duration":667},{"time":4917,"freq":247,"duration":333},{"time":5300,"freq":262,"duration":667},{"time":6017,"freq":294,"duration":333},{"time":6400,"freq":330,"duration":667},{"time":7117,"freq":330,"duration":333},{"time":7500,"freq":294,"duration":333},{"time":7883,"freq":262,"duration":667},{"time":8600,"freq":220,"duration":667},{"time":9317,"freq":247,"duration":333},{"time":9700,"freq":262,"duration":667},{"time":10417,"freq":294,"duration":333},{"time":10800,"freq":330,"duration":667},{"time":11517,"freq":330,"duration":333},{"time":11900,"freq":294,"duration":333},{"time":12283,"freq":262,"duration":667},{"time":13000,"freq":220,"duration":667},{"time":13717,"freq":247,"duration":333},{"time":14100,"freq":262,"duration":667},{"time":14817,"freq":294,"duration":333},{"time":15200,"freq":330,"duration":667},{"time":15917,"freq":330,"duration":333},{"time":16300,"freq":294,"duration":333},{"time":16683,"freq":262,"duration":667},{"time":17400,"freq":220,"duration":667},{"time":18117,"freq":247,"duration":333},{"time":18500,"freq":262,"duration":667},{"time":19217,"freq":294,"duration":333},{"time":19600,"freq":330,"duration":667},{"time":20317,"freq":330,"duration":333},{"time":20700,"freq":294,"duration":333},{"time":21083,"freq":262,"duration":667},{"time":21800,"freq":220,"duration":667},{"time":22517,"freq":247,"duration":333},{"time":22900,"freq":262,"duration":667},{"time":23617,"freq":294,"duration":333},{"time":24000,"freq":330,"duration":667},{"time":24717,"freq":330,"duration":333},{"time":25100,"freq":294,"duration":333},{"time":25483,"freq":262,"duration":667},{"time":26200,"freq":220,"duration":667},{"time":26917,"freq":247,"duration":333},{"time":27300,"freq":262,"duration":667},{"time":28017,"freq":294,"duration":333},{"time":28400,"freq":330,"duration":667},{"time":29117,"freq":330,"duration":333},{"time":29500,"freq":294,"duration":333},{"time":29883,"freq":262,"duration":667},{"time":30600,"freq":220,"duration":667},{"time":31317,"freq":247,"duration":333},{"time":31700,"freq":262,"duration":667},{"time":32417,"freq":294,"duration":333},{"time":32800,"freq":330,"duration":667},{"time":33517,"freq":330,"duration":333},{"time":33900,"freq":294,"duration":333},{"time":34283,"freq":262,"duration":667},{"time":35000,"freq":220,"duration":667},{"time":35717,"freq":247,"duration":333},{"time":36100,"freq":262,"duration":667},{"time":36817,"freq":294,"duration":333},{"time":37200,"freq":330,"duration":667},{"time":37917,"freq":330,"duration":333},{"time":38300,"freq":294,"duration":333},{"time":38683,"freq":262,"duration":667},{"time":39400,"freq":220,"duration":667},{"time":40117,"freq":247,"duration":333},{"time":40500,"freq":262,"duration":667},{"time":41217,"freq":294,"duration":333},{"time":41600,"freq":330,"duration":667},{"time":42317,"freq":330,"duration":333},{"time":42700,"freq":294,"duration":333},{"time":43083,"freq":262,"duration":667},{"time":43800,"freq":220,"duration":667},{"time":44517,"freq":247,"duration":333},{"time":44900,"freq":262,"duration":667},{"time":45617,"freq":294,"duration":333},{"time":46000,"freq":330,"duration":667},{"time":46717,"freq":330,"duration":333},{"time":47100,"freq":294,"duration":333},{"time":47483,"freq":262,"duration":667},{"time":48200,"freq":220,"duration":667},{"time":48917,"freq":247,"duration":333},{"time":49300,"freq":262,"duration":667},{"time":50017,"freq":294,"duration":333},{"time":50400,"freq":330,"duration":667},{"time":51117,"freq":330,"duration":333},{"time":51500,"freq":294,"duration":333},{"time":51883,"freq":262,"duration":667},{"time":52600,"freq":220,"duration":667},{"time":53317,"freq":247,"duration":333},{"time":53700,"freq":262,"duration":667},{"time":54417,"freq":294,"duration":333},{"time":54800,"freq":330,"duration":667},{"time":55517,"freq":330,"duration":333},{"time":55900,"freq":294,"duration":333},{"time":56283,"freq":262,"duration":667},{"time":57000,"freq":220,"duration":667},{"time":57717,"freq":247,"duration":333},{"time":58100,"freq":262,"duration":667},{"time":58817,"freq":294,"duration":333},{"time":59200,"freq":330,"duration":667},{"time":59917,"freq":330,"duration":333},{"time":60300,"freq":294,"duration":333},{"time":60683,"freq":262,"duration":667},{"time":61400,"freq":220,"duration":667},{"time":62117,"freq":247,"duration":333},{"time":62500,"freq":262,"duration":667},{"time":63217,"freq":294,"duration":333}]},"위스퀴다르":{"src":"world song/country-15.wav","durationMs":65000,"events":[{"time":4200,"freq":293,"duration":500},{"time":4750,"freq":311,"duration":500},{"time":5300,"freq":370,"duration":500},{"time":5850,"freq":392,"duration":1000},{"time":6900,"freq":370,"duration":500},{"time":7450,"freq":311,"duration":500},{"time":8000,"freq":293,"duration":1000},{"time":9050,"freq":293,"duration":500},{"time":9600,"freq":311,"duration":500},{"time":10150,"freq":370,"duration":500},{"time":10700,"freq":392,"duration":1000},{"time":11750,"freq":370,"duration":500},{"time":12300,"freq":311,"duration":500},{"time":12850,"freq":293,"duration":1000},{"time":13900,"freq":293,"duration":500},{"time":14450,"freq":311,"duration":500},{"time":15000,"freq":370,"duration":500},{"time":15550,"freq":392,"duration":1000},{"time":16600,"freq":370,"duration":500},{"time":17150,"freq":311,"duration":500},{"time":17700,"freq":293,"duration":1000},{"time":18750,"freq":293,"duration":500},{"time":19300,"freq":311,"duration":500},{"time":19850,"freq":370,"duration":500},{"time":20400,"freq":392,"duration":1000},{"time":21450,"freq":370,"duration":500},{"time":22000,"freq":311,"duration":500},{"time":22550,"freq":293,"duration":1000},{"time":23600,"freq":293,"duration":500},{"time":24150,"freq":311,"duration":500},{"time":24700,"freq":370,"duration":500},{"time":25250,"freq":392,"duration":1000},{"time":26300,"freq":370,"duration":500},{"time":26850,"freq":311,"duration":500},{"time":27400,"freq":293,"duration":1000},{"time":28450,"freq":293,"duration":500},{"time":29000,"freq":311,"duration":500},{"time":29550,"freq":370,"duration":500},{"time":30100,"freq":392,"duration":1000},{"time":31150,"freq":370,"duration":500},{"time":31700,"freq":311,"duration":500},{"time":32250,"freq":293,"duration":1000},{"time":33300,"freq":293,"duration":500},{"time":33850,"freq":311,"duration":500},{"time":34400,"freq":370,"duration":500},{"time":34950,"freq":392,"duration":1000},{"time":36000,"freq":370,"duration":500},{"time":36550,"freq":311,"duration":500},{"time":37100,"freq":293,"duration":1000},{"time":38150,"freq":293,"duration":500},{"time":38700,"freq":311,"duration":500},{"time":39250,"freq":370,"duration":500},{"time":39800,"freq":392,"duration":1000},{"time":40850,"freq":370,"duration":500},{"time":41400,"freq":311,"duration":500},{"time":41950,"freq":293,"duration":1000},{"time":43000,"freq":293,"duration":500},{"time":43550,"freq":311,"duration":500},{"time":44100,"freq":370,"duration":500},{"time":44650,"freq":392,"duration":1000},{"time":45700,"freq":370,"duration":500},{"time":46250,"freq":311,"duration":500},{"time":46800,"freq":293,"duration":1000},{"time":47850,"freq":293,"duration":500},{"time":48400,"freq":311,"duration":500},{"time":48950,"freq":370,"duration":500},{"time":49500,"freq":392,"duration":1000},{"time":50550,"freq":370,"duration":500},{"time":51100,"freq":311,"duration":500},{"time":51650,"freq":293,"duration":1000},{"time":52700,"freq":293,"duration":500},{"time":53250,"freq":311,"duration":500},{"time":53800,"freq":370,"duration":500},{"time":54350,"freq":392,"duration":1000},{"time":55400,"freq":370,"duration":500},{"time":55950,"freq":311,"duration":500},{"time":56500,"freq":293,"duration":1000},{"time":57550,"freq":293,"duration":500},{"time":58100,"freq":311,"duration":500},{"time":58650,"freq":370,"duration":500},{"time":59200,"freq":392,"duration":1000},{"time":60250,"freq":370,"duration":500},{"time":60800,"freq":311,"duration":500},{"time":61350,"freq":293,"duration":1000},{"time":62400,"freq":293,"duration":500},{"time":62950,"freq":311,"duration":500}]},"오 솔레 미오":{"src":"world song/country-16.wav","durationMs":65000,"events":[{"time":4200,"freq":494,"duration":667},{"time":4917,"freq":440,"duration":333},{"time":5300,"freq":392,"duration":333},{"time":5683,"freq":370,"duration":667},{"time":6400,"freq":392,"duration":333},{"time":6783,"freq":440,"duration":333},{"time":7167,"freq":392,"duration":667},{"time":7883,"freq":349,"duration":667},{"time":8600,"freq":293,"duration":1333},{"time":9983,"freq":494,"duration":667},{"time":10700,"freq":440,"duration":333},{"time":11083,"freq":392,"duration":333},{"time":11467,"freq":370,"duration":667},{"time":12183,"freq":392,"duration":333},{"time":12567,"freq":440,"duration":333},{"time":12950,"freq":392,"duration":667},{"time":13667,"freq":349,"duration":667},{"time":14383,"freq":293,"duration":1333},{"time":15767,"freq":494,"duration":667},{"time":16483,"freq":440,"duration":333},{"time":16867,"freq":392,"duration":333},{"time":17250,"freq":370,"duration":667},{"time":17967,"freq":392,"duration":333},{"time":18350,"freq":440,"duration":333},{"time":18733,"freq":392,"duration":667},{"time":19450,"freq":349,"duration":667},{"time":20167,"freq":293,"duration":1333},{"time":21550,"freq":494,"duration":667},{"time":22267,"freq":440,"duration":333},{"time":22650,"freq":392,"duration":333},{"time":23033,"freq":370,"duration":667},{"time":23750,"freq":392,"duration":333},{"time":24133,"freq":440,"duration":333},{"time":24517,"freq":392,"duration":667},{"time":25233,"freq":349,"duration":667},{"time":25950,"freq":293,"duration":1333},{"time":27333,"freq":494,"duration":667},{"time":28050,"freq":440,"duration":333},{"time":28433,"freq":392,"duration":333},{"time":28817,"freq":370,"duration":667},{"time":29533,"freq":392,"duration":333},{"time":29917,"freq":440,"duration":333},{"time":30300,"freq":392,"duration":667},{"time":31017,"freq":349,"duration":667},{"time":31733,"freq":293,"duration":1333},{"time":33117,"freq":494,"duration":667},{"time":33833,"freq":440,"duration":333},{"time":34217,"freq":392,"duration":333},{"time":34600,"freq":370,"duration":667},{"time":35317,"freq":392,"duration":333},{"time":35700,"freq":440,"duration":333},{"time":36083,"freq":392,"duration":667},{"time":36800,"freq":349,"duration":667},{"time":37517,"freq":293,"duration":1333},{"time":38900,"freq":494,"duration":667},{"time":39617,"freq":440,"duration":333},{"time":40000,"freq":392,"duration":333},{"time":40383,"freq":370,"duration":667},{"time":41100,"freq":392,"duration":333},{"time":41483,"freq":440,"duration":333},{"time":41867,"freq":392,"duration":667},{"time":42583,"freq":349,"duration":667},{"time":43300,"freq":293,"duration":1333},{"time":44683,"freq":494,"duration":667},{"time":45400,"freq":440,"duration":333},{"time":45783,"freq":392,"duration":333},{"time":46167,"freq":370,"duration":667},{"time":46883,"freq":392,"duration":333},{"time":47267,"freq":440,"duration":333},{"time":47650,"freq":392,"duration":667},{"time":48367,"freq":349,"duration":667},{"time":49083,"freq":293,"duration":1333},{"time":50467,"freq":494,"duration":667},{"time":51183,"freq":440,"duration":333},{"time":51567,"freq":392,"duration":333},{"time":51950,"freq":370,"duration":667},{"time":52667,"freq":392,"duration":333},{"time":53050,"freq":440,"duration":333},{"time":53433,"freq":392,"duration":667},{"time":54150,"freq":349,"duration":667},{"time":54867,"freq":293,"duration":1333},{"time":56250,"freq":494,"duration":667},{"time":56967,"freq":440,"duration":333},{"time":57350,"freq":392,"duration":333},{"time":57733,"freq":370,"duration":667},{"time":58450,"freq":392,"duration":333},{"time":58833,"freq":440,"duration":333},{"time":59217,"freq":392,"duration":667},{"time":59933,"freq":349,"duration":667},{"time":60650,"freq":293,"duration":1333},{"time":62033,"freq":494,"duration":667},{"time":62750,"freq":440,"duration":333},{"time":63133,"freq":392,"duration":333}]},"에스파냐 카니":{"src":"world song/country-17.wav","durationMs":65000,"events":[{"time":4200,"freq":440,"duration":333},{"time":4583,"freq":415,"duration":333},{"time":4967,"freq":440,"duration":333},{"time":5350,"freq":494,"duration":333},{"time":5733,"freq":523,"duration":667},{"time":6450,"freq":494,"duration":333},{"time":6833,"freq":440,"duration":333},{"time":7217,"freq":415,"duration":667},{"time":7933,"freq":440,"duration":333},{"time":8317,"freq":415,"duration":333},{"time":8700,"freq":440,"duration":333},{"time":9083,"freq":494,"duration":333},{"time":9467,"freq":523,"duration":667},{"time":10183,"freq":494,"duration":333},{"time":10567,"freq":440,"duration":333},{"time":10950,"freq":415,"duration":667},{"time":11667,"freq":440,"duration":333},{"time":12050,"freq":415,"duration":333},{"time":12433,"freq":440,"duration":333},{"time":12817,"freq":494,"duration":333},{"time":13200,"freq":523,"duration":667},{"time":13917,"freq":494,"duration":333},{"time":14300,"freq":440,"duration":333},{"time":14683,"freq":415,"duration":667},{"time":15400,"freq":440,"duration":333},{"time":15783,"freq":415,"duration":333},{"time":16167,"freq":440,"duration":333},{"time":16550,"freq":494,"duration":333},{"time":16933,"freq":523,"duration":667},{"time":17650,"freq":494,"duration":333},{"time":18033,"freq":440,"duration":333},{"time":18417,"freq":415,"duration":667},{"time":19133,"freq":440,"duration":333},{"time":19517,"freq":415,"duration":333},{"time":19900,"freq":440,"duration":333},{"time":20283,"freq":494,"duration":333},{"time":20667,"freq":523,"duration":667},{"time":21383,"freq":494,"duration":333},{"time":21767,"freq":440,"duration":333},{"time":22150,"freq":415,"duration":667},{"time":22867,"freq":440,"duration":333},{"time":23250,"freq":415,"duration":333},{"time":23633,"freq":440,"duration":333},{"time":24017,"freq":494,"duration":333},{"time":24400,"freq":523,"duration":667},{"time":25117,"freq":494,"duration":333},{"time":25500,"freq":440,"duration":333},{"time":25883,"freq":415,"duration":667},{"time":26600,"freq":440,"duration":333},{"time":26983,"freq":415,"duration":333},{"time":27367,"freq":440,"duration":333},{"time":27750,"freq":494,"duration":333},{"time":28133,"freq":523,"duration":667},{"time":28850,"freq":494,"duration":333},{"time":29233,"freq":440,"duration":333},{"time":29617,"freq":415,"duration":667},{"time":30333,"freq":440,"duration":333},{"time":30717,"freq":415,"duration":333},{"time":31100,"freq":440,"duration":333},{"time":31483,"freq":494,"duration":333},{"time":31867,"freq":523,"duration":667},{"time":32583,"freq":494,"duration":333},{"time":32967,"freq":440,"duration":333},{"time":33350,"freq":415,"duration":667},{"time":34067,"freq":440,"duration":333},{"time":34450,"freq":415,"duration":333},{"time":34833,"freq":440,"duration":333},{"time":35217,"freq":494,"duration":333},{"time":35600,"freq":523,"duration":667},{"time":36317,"freq":494,"duration":333},{"time":36700,"freq":440,"duration":333},{"time":37083,"freq":415,"duration":667},{"time":37800,"freq":440,"duration":333},{"time":38183,"freq":415,"duration":333},{"time":38567,"freq":440,"duration":333},{"time":38950,"freq":494,"duration":333},{"time":39333,"freq":523,"duration":667},{"time":40050,"freq":494,"duration":333},{"time":40433,"freq":440,"duration":333},{"time":40817,"freq":415,"duration":667},{"time":41533,"freq":440,"duration":333},{"time":41917,"freq":415,"duration":333},{"time":42300,"freq":440,"duration":333},{"time":42683,"freq":494,"duration":333},{"time":43067,"freq":523,"duration":667},{"time":43783,"freq":494,"duration":333},{"time":44167,"freq":440,"duration":333},{"time":44550,"freq":415,"duration":667},{"time":45267,"freq":440,"duration":333},{"time":45650,"freq":415,"duration":333},{"time":46033,"freq":440,"duration":333},{"time":46417,"freq":494,"duration":333},{"time":46800,"freq":523,"duration":667},{"time":47517,"freq":494,"duration":333},{"time":47900,"freq":440,"duration":333},{"time":48283,"freq":415,"duration":667},{"time":49000,"freq":440,"duration":333},{"time":49383,"freq":415,"duration":333},{"time":49767,"freq":440,"duration":333},{"time":50150,"freq":494,"duration":333},{"time":50533,"freq":523,"duration":667},{"time":51250,"freq":494,"duration":333},{"time":51633,"freq":440,"duration":333},{"time":52017,"freq":415,"duration":667},{"time":52733,"freq":440,"duration":333},{"time":53117,"freq":415,"duration":333},{"time":53500,"freq":440,"duration":333},{"time":53883,"freq":494,"duration":333},{"time":54267,"freq":523,"duration":667},{"time":54983,"freq":494,"duration":333},{"time":55367,"freq":440,"duration":333},{"time":55750,"freq":415,"duration":667},{"time":56467,"freq":440,"duration":333},{"time":56850,"freq":415,"duration":333},{"time":57233,"freq":440,"duration":333},{"time":57617,"freq":494,"duration":333},{"time":58000,"freq":523,"duration":667},{"time":58717,"freq":494,"duration":333},{"time":59100,"freq":440,"duration":333},{"time":59483,"freq":415,"duration":667},{"time":60200,"freq":440,"duration":333},{"time":60583,"freq":415,"duration":333},{"time":60967,"freq":440,"duration":333},{"time":61350,"freq":494,"duration":333},{"time":61733,"freq":523,"duration":667},{"time":62450,"freq":494,"duration":333},{"time":62833,"freq":440,"duration":333},{"time":63217,"freq":415,"duration":667}]},"라 밤바":{"src":"world song/country-18.wav","durationMs":65000,"events":[{"time":4200,"freq":261,"duration":333},{"time":4583,"freq":329,"duration":333},{"time":4967,"freq":392,"duration":667},{"time":5683,"freq":440,"duration":333},{"time":6067,"freq":349,"duration":333},{"time":6450,"freq":392,"duration":667},{"time":7167,"freq":261,"duration":333},{"time":7550,"freq":329,"duration":333},{"time":7933,"freq":392,"duration":667},{"time":8650,"freq":440,"duration":333},{"time":9033,"freq":349,"duration":333},{"time":9417,"freq":392,"duration":667},{"time":10133,"freq":261,"duration":333},{"time":10517,"freq":329,"duration":333},{"time":10900,"freq":392,"duration":667},{"time":11617,"freq":440,"duration":333},{"time":12000,"freq":349,"duration":333},{"time":12383,"freq":392,"duration":667},{"time":13100,"freq":261,"duration":333},{"time":13483,"freq":329,"duration":333},{"time":13867,"freq":392,"duration":667},{"time":14583,"freq":440,"duration":333},{"time":14967,"freq":349,"duration":333},{"time":15350,"freq":392,"duration":667},{"time":16067,"freq":261,"duration":333},{"time":16450,"freq":329,"duration":333},{"time":16833,"freq":392,"duration":667},{"time":17550,"freq":440,"duration":333},{"time":17933,"freq":349,"duration":333},{"time":18317,"freq":392,"duration":667},{"time":19033,"freq":261,"duration":333},{"time":19417,"freq":329,"duration":333},{"time":19800,"freq":392,"duration":667},{"time":20517,"freq":440,"duration":333},{"time":20900,"freq":349,"duration":333},{"time":21283,"freq":392,"duration":667},{"time":22000,"freq":261,"duration":333},{"time":22383,"freq":329,"duration":333},{"time":22767,"freq":392,"duration":667},{"time":23483,"freq":440,"duration":333},{"time":23867,"freq":349,"duration":333},{"time":24250,"freq":392,"duration":667},{"time":24967,"freq":261,"duration":333},{"time":25350,"freq":329,"duration":333},{"time":25733,"freq":392,"duration":667},{"time":26450,"freq":440,"duration":333},{"time":26833,"freq":349,"duration":333},{"time":27217,"freq":392,"duration":667},{"time":27933,"freq":261,"duration":333},{"time":28317,"freq":329,"duration":333},{"time":28700,"freq":392,"duration":667},{"time":29417,"freq":440,"duration":333},{"time":29800,"freq":349,"duration":333},{"time":30183,"freq":392,"duration":667},{"time":30900,"freq":261,"duration":333},{"time":31283,"freq":329,"duration":333},{"time":31667,"freq":392,"duration":667},{"time":32383,"freq":440,"duration":333},{"time":32767,"freq":349,"duration":333},{"time":33150,"freq":392,"duration":667},{"time":33867,"freq":261,"duration":333},{"time":34250,"freq":329,"duration":333},{"time":34633,"freq":392,"duration":667},{"time":35350,"freq":440,"duration":333},{"time":35733,"freq":349,"duration":333},{"time":36117,"freq":392,"duration":667},{"time":36833,"freq":261,"duration":333},{"time":37217,"freq":329,"duration":333},{"time":37600,"freq":392,"duration":667},{"time":38317,"freq":440,"duration":333},{"time":38700,"freq":349,"duration":333},{"time":39083,"freq":392,"duration":667},{"time":39800,"freq":261,"duration":333},{"time":40183,"freq":329,"duration":333},{"time":40567,"freq":392,"duration":667},{"time":41283,"freq":440,"duration":333},{"time":41667,"freq":349,"duration":333},{"time":42050,"freq":392,"duration":667},{"time":42767,"freq":261,"duration":333},{"time":43150,"freq":329,"duration":333},{"time":43533,"freq":392,"duration":667},{"time":44250,"freq":440,"duration":333},{"time":44633,"freq":349,"duration":333},{"time":45017,"freq":392,"duration":667},{"time":45733,"freq":261,"duration":333},{"time":46117,"freq":329,"duration":333},{"time":46500,"freq":392,"duration":667},{"time":47217,"freq":440,"duration":333},{"time":47600,"freq":349,"duration":333},{"time":47983,"freq":392,"duration":667},{"time":48700,"freq":261,"duration":333},{"time":49083,"freq":329,"duration":333},{"time":49467,"freq":392,"duration":667},{"time":50183,"freq":440,"duration":333},{"time":50567,"freq":349,"duration":333},{"time":50950,"freq":392,"duration":667},{"time":51667,"freq":261,"duration":333},{"time":52050,"freq":329,"duration":333},{"time":52433,"freq":392,"duration":667},{"time":53150,"freq":440,"duration":333},{"time":53533,"freq":349,"duration":333},{"time":53917,"freq":392,"duration":667},{"time":54633,"freq":261,"duration":333},{"time":55017,"freq":329,"duration":333},{"time":55400,"freq":392,"duration":667},{"time":56117,"freq":440,"duration":333},{"time":56500,"freq":349,"duration":333},{"time":56883,"freq":392,"duration":667},{"time":57600,"freq":261,"duration":333},{"time":57983,"freq":329,"duration":333},{"time":58367,"freq":392,"duration":667},{"time":59083,"freq":440,"duration":333},{"time":59467,"freq":349,"duration":333},{"time":59850,"freq":392,"duration":667},{"time":60567,"freq":261,"duration":333},{"time":60950,"freq":329,"duration":333},{"time":61333,"freq":392,"duration":667},{"time":62050,"freq":440,"duration":333},{"time":62433,"freq":349,"duration":333},{"time":62817,"freq":392,"duration":667}]},"이파네마에서 온 소녀":{"src":"world song/country-19.wav","durationMs":65000,"events":[{"time":4200,"freq":349,"duration":667},{"time":4917,"freq":392,"duration":667},{"time":5633,"freq":349,"duration":667},{"time":6350,"freq":293,"duration":667},{"time":7067,"freq":349,"duration":667},{"time":7783,"freq":392,"duration":667},{"time":8500,"freq":349,"duration":667},{"time":9217,"freq":392,"duration":667},{"time":9933,"freq":349,"duration":667},{"time":10650,"freq":293,"duration":667},{"time":11367,"freq":349,"duration":667},{"time":12083,"freq":392,"duration":667},{"time":12800,"freq":349,"duration":667},{"time":13517,"freq":392,"duration":667},{"time":14233,"freq":349,"duration":667},{"time":14950,"freq":293,"duration":667},{"time":15667,"freq":349,"duration":667},{"time":16383,"freq":392,"duration":667},{"time":17100,"freq":349,"duration":667},{"time":17817,"freq":392,"duration":667},{"time":18533,"freq":349,"duration":667},{"time":19250,"freq":293,"duration":667},{"time":19967,"freq":349,"duration":667},{"time":20683,"freq":392,"duration":667},{"time":21400,"freq":349,"duration":667},{"time":22117,"freq":392,"duration":667},{"time":22833,"freq":349,"duration":667},{"time":23550,"freq":293,"duration":667},{"time":24267,"freq":349,"duration":667},{"time":24983,"freq":392,"duration":667},{"time":25700,"freq":349,"duration":667},{"time":26417,"freq":392,"duration":667},{"time":27133,"freq":349,"duration":667},{"time":27850,"freq":293,"duration":667},{"time":28567,"freq":349,"duration":667},{"time":29283,"freq":392,"duration":667},{"time":30000,"freq":349,"duration":667},{"time":30717,"freq":392,"duration":667},{"time":31433,"freq":349,"duration":667},{"time":32150,"freq":293,"duration":667},{"time":32867,"freq":349,"duration":667},{"time":33583,"freq":392,"duration":667},{"time":34300,"freq":349,"duration":667},{"time":35017,"freq":392,"duration":667},{"time":35733,"freq":349,"duration":667},{"time":36450,"freq":293,"duration":667},{"time":37167,"freq":349,"duration":667},{"time":37883,"freq":392,"duration":667},{"time":38600,"freq":349,"duration":667},{"time":39317,"freq":392,"duration":667},{"time":40033,"freq":349,"duration":667},{"time":40750,"freq":293,"duration":667},{"time":41467,"freq":349,"duration":667},{"time":42183,"freq":392,"duration":667},{"time":42900,"freq":349,"duration":667},{"time":43617,"freq":392,"duration":667},{"time":44333,"freq":349,"duration":667},{"time":45050,"freq":293,"duration":667},{"time":45767,"freq":349,"duration":667},{"time":46483,"freq":392,"duration":667},{"time":47200,"freq":349,"duration":667},{"time":47917,"freq":392,"duration":667},{"time":48633,"freq":349,"duration":667},{"time":49350,"freq":293,"duration":667},{"time":50067,"freq":349,"duration":667},{"time":50783,"freq":392,"duration":667},{"time":51500,"freq":349,"duration":667},{"time":52217,"freq":392,"duration":667},{"time":52933,"freq":349,"duration":667},{"time":53650,"freq":293,"duration":667},{"time":54367,"freq":349,"duration":667},{"time":55083,"freq":392,"duration":667},{"time":55800,"freq":349,"duration":667},{"time":56517,"freq":392,"duration":667},{"time":57233,"freq":349,"duration":667},{"time":57950,"freq":293,"duration":667},{"time":58667,"freq":349,"duration":667},{"time":59383,"freq":392,"duration":667},{"time":60100,"freq":349,"duration":667},{"time":60817,"freq":392,"duration":667},{"time":61533,"freq":349,"duration":667},{"time":62250,"freq":293,"duration":667},{"time":62967,"freq":349,"duration":667}]},"하쿠나 마타타":{"src":"world song/country-20.wav","durationMs":65000,"events":[{"time":4200,"freq":261,"duration":333},{"time":4583,"freq":293,"duration":333},{"time":4967,"freq":329,"duration":667},{"time":5683,"freq":392,"duration":667},{"time":6400,"freq":440,"duration":333},{"time":6783,"freq":392,"duration":333},{"time":7167,"freq":523,"duration":667},{"time":7883,"freq":261,"duration":333},{"time":8267,"freq":293,"duration":333},{"time":8650,"freq":329,"duration":667},{"time":9367,"freq":392,"duration":667},{"time":10083,"freq":440,"duration":333},{"time":10467,"freq":392,"duration":333},{"time":10850,"freq":523,"duration":667},{"time":11567,"freq":261,"duration":333},{"time":11950,"freq":293,"duration":333},{"time":12333,"freq":329,"duration":667},{"time":13050,"freq":392,"duration":667},{"time":13767,"freq":440,"duration":333},{"time":14150,"freq":392,"duration":333},{"time":14533,"freq":523,"duration":667},{"time":15250,"freq":261,"duration":333},{"time":15633,"freq":293,"duration":333},{"time":16017,"freq":329,"duration":667},{"time":16733,"freq":392,"duration":667},{"time":17450,"freq":440,"duration":333},{"time":17833,"freq":392,"duration":333},{"time":18217,"freq":523,"duration":667},{"time":18933,"freq":261,"duration":333},{"time":19317,"freq":293,"duration":333},{"time":19700,"freq":329,"duration":667},{"time":20417,"freq":392,"duration":667},{"time":21133,"freq":440,"duration":333},{"time":21517,"freq":392,"duration":333},{"time":21900,"freq":523,"duration":667},{"time":22617,"freq":261,"duration":333},{"time":23000,"freq":293,"duration":333},{"time":23383,"freq":329,"duration":667},{"time":24100,"freq":392,"duration":667},{"time":24817,"freq":440,"duration":333},{"time":25200,"freq":392,"duration":333},{"time":25583,"freq":523,"duration":667},{"time":26300,"freq":261,"duration":333},{"time":26683,"freq":293,"duration":333},{"time":27067,"freq":329,"duration":667},{"time":27783,"freq":392,"duration":667},{"time":28500,"freq":440,"duration":333},{"time":28883,"freq":392,"duration":333},{"time":29267,"freq":523,"duration":667},{"time":29983,"freq":261,"duration":333},{"time":30367,"freq":293,"duration":333},{"time":30750,"freq":329,"duration":667},{"time":31467,"freq":392,"duration":667},{"time":32183,"freq":440,"duration":333},{"time":32567,"freq":392,"duration":333},{"time":32950,"freq":523,"duration":667},{"time":33667,"freq":261,"duration":333},{"time":34050,"freq":293,"duration":333},{"time":34433,"freq":329,"duration":667},{"time":35150,"freq":392,"duration":667},{"time":35867,"freq":440,"duration":333},{"time":36250,"freq":392,"duration":333},{"time":36633,"freq":523,"duration":667},{"time":37350,"freq":261,"duration":333},{"time":37733,"freq":293,"duration":333},{"time":38117,"freq":329,"duration":667},{"time":38833,"freq":392,"duration":667},{"time":39550,"freq":440,"duration":333},{"time":39933,"freq":392,"duration":333},{"time":40317,"freq":523,"duration":667},{"time":41033,"freq":261,"duration":333},{"time":41417,"freq":293,"duration":333},{"time":41800,"freq":329,"duration":667},{"time":42517,"freq":392,"duration":667},{"time":43233,"freq":440,"duration":333},{"time":43617,"freq":392,"duration":333},{"time":44000,"freq":523,"duration":667},{"time":44717,"freq":261,"duration":333},{"time":45100,"freq":293,"duration":333},{"time":45483,"freq":329,"duration":667},{"time":46200,"freq":392,"duration":667},{"time":46917,"freq":440,"duration":333},{"time":47300,"freq":392,"duration":333},{"time":47683,"freq":523,"duration":667},{"time":48400,"freq":261,"duration":333},{"time":48783,"freq":293,"duration":333},{"time":49167,"freq":329,"duration":667},{"time":49883,"freq":392,"duration":667},{"time":50600,"freq":440,"duration":333},{"time":50983,"freq":392,"duration":333},{"time":51367,"freq":523,"duration":667},{"time":52083,"freq":261,"duration":333},{"time":52467,"freq":293,"duration":333},{"time":52850,"freq":329,"duration":667},{"time":53567,"freq":392,"duration":667},{"time":54283,"freq":440,"duration":333},{"time":54667,"freq":392,"duration":333},{"time":55050,"freq":523,"duration":667},{"time":55767,"freq":261,"duration":333},{"time":56150,"freq":293,"duration":333},{"time":56533,"freq":329,"duration":667},{"time":57250,"freq":392,"duration":667},{"time":57967,"freq":440,"duration":333},{"time":58350,"freq":392,"duration":333},{"time":58733,"freq":523,"duration":667},{"time":59450,"freq":261,"duration":333},{"time":59833,"freq":293,"duration":333},{"time":60217,"freq":329,"duration":667},{"time":60933,"freq":392,"duration":667},{"time":61650,"freq":440,"duration":333},{"time":62033,"freq":392,"duration":333},{"time":62417,"freq":523,"duration":667},{"time":63133,"freq":261,"duration":333}]}};
+    const countryNoteIndices = {"대한민국":0,"베트남":1,"중국":2,"일본":3,"대만":4,"미국":5,"영국":6,"캐나다":7,"호주":8,"독일":9,"이스라엘":10,"오스트리아":11,"폴란드":12,"러시아":13,"튀르키예":14,"이탈리아":15,"스페인":16,"멕시코":17,"브라질":18,"케냐":19};
+    const countryNoteAtlas = new Image();
+    countryNoteAtlas.src = 'family-assets/country-note-atlas.png';
+    const gameAudio = new Audio();
+    gameAudio.preload = 'auto';
+    let audioRunId = 0;
+    function musicTimeMs() { return gameAudio.currentTime * 1000; }
+    function drawCountryNote(note,laneWidth) {
+        const index = countryNoteIndices[currentSelectedCountry] || 0;
+        const col=index%5,row=Math.floor(index/5);
+        const bands=[[.015,.27],[.27,.50],[.50,.735],[.735,.97]];
+        const sw=countryNoteAtlas.naturalWidth/5;
+        const sy=countryNoteAtlas.naturalHeight*bands[row][0];
+        const sh=countryNoteAtlas.naturalHeight*(bands[row][1]-bands[row][0]);
+        const size=Math.min(92,laneWidth*.67);
+        const x=note.lane*laneWidth+laneWidth/2,y=note.y;
+        ctx.save();
+        ctx.shadowColor=['#ff4757','#2ed573','#1e90ff','#ffa502'][note.lane];ctx.shadowBlur=12;
+        if(countryNoteAtlas.complete&&countryNoteAtlas.naturalWidth)ctx.drawImage(countryNoteAtlas,col*sw,sy,sw,sh,x-size/2,y-size/2,size,size);
+        else {ctx.beginPath();ctx.arc(x,y,size*.35,0,Math.PI*2);ctx.fill();}
+        ctx.restore();
+    }
 
     let idx = 0;
     let score = { A:0, B:0, C:0, D:0 };
     let currentSelectedSong = "";
+    let currentSelectedCountry = "";
+    let quizUnlocked = false;
+    let currentPlayerName = "";
 
     let canvas, ctx;
     let gameAnimationId;
@@ -370,46 +539,163 @@
     }
 
     function getLaneForMelodyNote(noteData, noteIndex, diff) {
-        if (diff === 'easy') {
-            return noteData.f < 380 ? 0 : 3;
-        }
-        if (diff === 'normal') {
-            return (Math.round(noteData.f / 55) + noteIndex) % laneCount;
-        }
-        return (Math.round(noteData.f / 35) + noteIndex * 2) % laneCount;
+        const lanePatterns = {
+            easy: [0, 1, 2, 3],
+            normal: [0, 2, 1, 3, 1, 2, 3, 0],
+            hard: [0, 2, 3, 1, 3, 0, 1, 2]
+        };
+        const pattern = lanePatterns[diff] || lanePatterns.easy;
+        return pattern[noteIndex % pattern.length];
     }
 
     function buildRhythmChart(songName, diff) {
-        const melody = songMelodies[songName] || songMelodies["default"];
+        const track = songTracks[songName];
+        if (!track) throw new Error('연결된 음원이 없습니다: '+songName);
         const settings = diffSettings[diff];
-        const chart = [];
-        let hitTime = 900;
-        let melodyIndex = 0;
+        const end = Math.min(settings.durationMs+4200,track.durationMs-1500);
+        const chart=[];
+        track.events.forEach((event,index)=>{
+            if(event.time>=end)return;
+            if(diff==='easy'&&index%2!==0)return;
+            const lane=getLaneForMelodyNote(event,chart.length,diff);
+            const holdMs=diff!=='easy'&&event.duration>=650&&chart.length%5===4?Math.min(event.duration*.75,1000):0;
+            chart.push({hitTime:event.time,lane,freq:event.freq,holdMs});
+            if(diff==='hard'&&event.duration>=650)chart.push({hitTime:event.time+Math.round(event.duration/2),lane:(lane+1)%4,freq:event.freq,holdMs:0});
+        });
+        return chart.sort((a,b)=>a.hitTime-b.hitTime);
+    }
 
-        while (hitTime < settings.durationMs - 1200) {
-            const noteData = melody[melodyIndex % melody.length];
-            const stepMs = getMelodyStepMs(noteData);
-            const shouldPlaceNote = diff !== 'easy' || melodyIndex % settings.density === 0;
+    function resetCultureQuiz(countryName) {
+        currentSelectedCountry = countryName;
+        updateCountryDancers(countryName);
+        quizUnlocked = false;
+        const quiz = document.getElementById('culture-quiz');
+        quiz.classList.remove('show');
+        document.getElementById('quiz-feedback').innerText = '';
+        const startBtn = document.getElementById('game-start-btn');
+        startBtn.style.display = 'none';
+        document.getElementById('player-setup').style.display = 'none';
+        document.getElementById('leaderboard').style.display = 'none';
+        const quizBtn = document.getElementById('quiz-open-btn');
+        quizBtn.style.display = 'block';
+        quizBtn.innerText = "📝 " + countryName + " 가족문화 퀴즈로 가기";
+    }
 
-            if (shouldPlaceNote) {
-                const lane = getLaneForMelodyNote(noteData, melodyIndex, diff);
-                chart.push({ hitTime, lane, freq: noteData.f });
+    function updateCountryDancers(countryName) {
+        const position = countrySpritePositions[countryName] || [0, 0];
+        document.querySelectorAll('.country-dancer').forEach(dancer => {
+            dancer.style.setProperty('--sprite-x', position[0] + '%');
+            dancer.style.setProperty('--sprite-y', position[1] + '%');
+        });
+    }
 
-                if (diff === 'hard' && stepMs > 420) {
-                    chart.push({
-                        hitTime: hitTime + Math.min(stepMs * 0.52, 320),
-                        lane: (lane + 1 + (melodyIndex % 2)) % laneCount,
-                        freq: noteData.f
-                    });
-                }
-            }
-
-            hitTime += stepMs;
-            melodyIndex++;
+    function requestRhythmGame() {
+        if (gameRunning) {
+            stopRhythmGame();
+            return;
         }
+        if (!quizUnlocked) return;
+        const nameInput = document.getElementById('player-name');
+        currentPlayerName = nameInput.value.trim().slice(0, 12);
+        if (!currentPlayerName) {
+            alert('순위에 기록할 이름을 먼저 입력해 주세요.');
+            nameInput.focus();
+            return;
+        }
+        toggleRhythmGame();
+    }
 
-        chart.sort((a, b) => a.hitTime - b.hitTime);
-        return chart;
+    function getLeaderboardKey(songName) {
+        return 'familyCultureRhythmTop5:' + songName;
+    }
+
+    function readLeaderboard(songName) {
+        try {
+            const saved = JSON.parse(localStorage.getItem(getLeaderboardKey(songName)) || '[]');
+            return Array.isArray(saved) ? saved : [];
+        } catch (e) {
+            return [];
+        }
+    }
+
+    function renderLeaderboard(songName) {
+        const board = document.getElementById('leaderboard');
+        const list = document.getElementById('leaderboard-list');
+        const records = readLeaderboard(songName).slice(0, 5);
+        document.getElementById('leaderboard-title').innerText = "🏆 '" + songName + "' 클리어 TOP 5";
+        list.innerHTML = '';
+        if (!records.length) {
+            const empty = document.createElement('li');
+            empty.innerText = '아직 클리어 기록이 없습니다.';
+            list.appendChild(empty);
+        } else {
+            const difficultyNames = { easy: '하', normal: '중', hard: '상' };
+            records.forEach(record => {
+                const item = document.createElement('li');
+                item.innerText = record.name + ' · ' + record.score + '점 · 난이도 ' + (difficultyNames[record.difficulty] || record.difficulty);
+                list.appendChild(item);
+            });
+        }
+        board.style.display = 'block';
+    }
+
+    function saveLeaderboardScore() {
+        const records = readLeaderboard(currentSelectedSong);
+        const newRecord = { name: currentPlayerName, score: gameScore, difficulty, playedAt: Date.now() };
+        records.push(newRecord);
+        records.sort((a, b) => b.score - a.score || a.playedAt - b.playedAt);
+        const topFive = records.slice(0, 5);
+        try {
+            localStorage.setItem(getLeaderboardKey(currentSelectedSong), JSON.stringify(topFive));
+        } catch (e) {}
+        renderLeaderboard(currentSelectedSong);
+        return topFive.indexOf(newRecord) + 1;
+    }
+
+    function showCultureQuiz() {
+        const quiz = document.getElementById('culture-quiz');
+        const question = document.getElementById('quiz-question');
+        const options = document.getElementById('quiz-options');
+        const quizCountry = currentSelectedCountry;
+        const answerKeyword = countryQuizKeywords[quizCountry];
+        const allKeywords = Object.values(countryQuizKeywords);
+        const distractors = allKeywords.filter(word => word !== answerKeyword).sort(() => Math.random() - 0.5).slice(0, 3);
+        const choices = [answerKeyword, ...distractors].sort(() => Math.random() - 0.5);
+        const cultureText = countryFamilyCultures[quizCountry];
+        const blankText = cultureText.replace(answerKeyword, '【 빈칸 】');
+
+        question.innerText = "Q. " + quizCountry + "의 가족문화 설명에서 빈칸에 들어갈 한 단어는 무엇일까요?\n\n" + blankText;
+        options.innerHTML = '';
+        choices.forEach(word => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'quiz-option';
+            button.innerText = word;
+            button.onclick = () => answerCultureQuiz(word);
+            options.appendChild(button);
+        });
+        quiz.classList.add('show');
+        document.getElementById('quiz-feedback').innerText = '정답을 맞히면 대표곡 리듬게임이 열립니다.';
+    }
+
+    function answerCultureQuiz(answer) {
+        const feedback = document.getElementById('quiz-feedback');
+        if (answer !== countryQuizKeywords[currentSelectedCountry]) {
+            feedback.style.color = '#dc3545';
+            feedback.innerText = '아쉬워요! 빈칸 앞뒤 문장을 다시 읽고 골라 보세요.';
+            return;
+        }
+        quizUnlocked = true;
+        feedback.style.color = '#198754';
+        feedback.innerText = '정답입니다! 이제 대표곡 리듬게임을 시작할 수 있어요.';
+        const startBtn = document.getElementById('game-start-btn');
+        startBtn.innerText = "🎵 대표곡 리듬게임 시작하기";
+        startBtn.style.background = "#28a745";
+        startBtn.style.display = 'block';
+        document.getElementById('player-setup').style.display = 'block';
+        renderLeaderboard(currentSelectedSong);
+        document.getElementById('quiz-open-btn').style.display = 'none';
+        document.getElementById('culture-quiz').classList.remove('show');
     }
 
     // 오디오 관련 코드는 오직 3페이지(리듬게임)에서만 초기화되도록 격리
@@ -442,11 +728,20 @@
                     initAudio(); 
                     pressLane(i); 
                 });
+                pad.addEventListener('touchend', function(e) {
+                    e.preventDefault();
+                    releaseLane(i);
+                });
                 pad.addEventListener('mousedown', function(e) { 
                     e.preventDefault(); 
                     initAudio(); 
                     pressLane(i); 
                 });
+                pad.addEventListener('mouseup', function(e) {
+                    e.preventDefault();
+                    releaseLane(i);
+                });
+                pad.addEventListener('mouseleave', function() { releaseLane(i); });
             }
         }
     });
@@ -494,6 +789,8 @@
     }
 
     function stopBgm() {
+        audioRunId++;
+        gameAudio.pause();
         bgmActive = false;
         bgmTimeouts.forEach(t => clearTimeout(t));
         bgmTimeouts = [];
@@ -525,8 +822,7 @@
     }
 
     function showR() {
-        document.getElementById('p2').style.display = 'none';
-        document.getElementById('p3').style.display = 'block';
+        showOnlyPage('p3');
         
         let maxT = 'A';
         let maxS = -1;
@@ -542,13 +838,12 @@
         group.countries.forEach((country, index) => {
             let opt = document.createElement('option');
             opt.value = index;
-            opt.innerText = country.name + " (" + country.song + ")";
+            opt.innerText = country.name + " · " + country.song;
             selector.appendChild(opt);
         });
 
         selector.onchange = function() {
-            let selectedIndex = this.value;
-            let selectedCountry = group.countries[selectedIndex];
+            const selectedCountry = group.countries[Number(this.value)];
             updateSelectedCountryDetails(group, selectedCountry);
         };
 
@@ -560,19 +855,38 @@
             stopRhythmGame();
         }
 
+        resetCultureQuiz(country.name);
+        const familyTypes = [
+            ['공경과 보답으로 전하는 마음','0% 0%'],
+            ['서로의 선택을 존중하는 마음','100% 0%'],
+            ['대화로 지혜를 나누는 마음','0% 100%'],
+            ['함께하며 정을 나누는 마음','100% 100%']
+        ];
+        const familyType = familyTypes[Object.values(countryGroups).indexOf(group)] || familyTypes[0];
+        const photo = document.getElementById('family-result-photo');
+        photo.style.setProperty('--family-photo-position', familyType[1]);
+        photo.setAttribute('aria-label',familyType[0]+'을 표현한 가족 사진');
+        document.getElementById('family-value-title').innerText = familyType[0];
+        document.getElementById('family-culture-text').innerText = country.name+'의 가족문화 · '+(countryFamilyCultures[country.name] || group.desc);
+
         currentSelectedSong = country.song;
+        gameAudio.pause();
+        gameAudio.src = songTracks[currentSelectedSong].src;
+        gameAudio.load();
         const selectedFlagImage = countryFlagImages[country.name] || "세계 가족 문화 성향 테스트 사진.png";
-        document.documentElement.style.setProperty('--page-bg-image', 'url("' + selectedFlagImage + '")');
+        document.documentElement.style.setProperty('--page-bg-image', 'url("family-assets/family-rhythm-hero.png")');
         document.getElementById('r-tag').innerText = "🎵 대표 노래: '" + currentSelectedSong + "'";
         document.getElementById('country-flag').innerHTML = '<img src="' + selectedFlagImage + '" alt="' + country.name + ' 국기">';
-        document.getElementById('r-title').innerText = country.name + " (" + group.groupName + ")";
+        document.getElementById('r-title').innerText = country.name;
         
-        let countryListText = group.countries.map(c => c.name).join(', ');
         const songDescription = songDescriptions[currentSelectedSong] || "이 곡은 해당 국가의 문화적 분위기를 느낄 수 있는 대표 음악으로, 결과 유형의 정서와 함께 감상할 수 있습니다.";
-        document.getElementById('r-desc').innerText = group.desc + "\n\n이 유형에 속하는 전 세계 대표 국가들로는 [" + countryListText + "] 등이 있으며, 당신의 소통 방식은 특히 '" + country.name + "'의 유대 문화와 깊은 연관이 있습니다.\n\n🎼 대표곡 설명: " + songDescription;
+        document.getElementById('r-desc').innerText = "🎼 " + country.name + "의 대표곡 · " + currentSelectedSong + "\n" + songDescription;
         
-        document.getElementById('game-song-name').innerText = "🎧 음악 연주 중: " + currentSelectedSong;
+        document.getElementById('game-song-name').innerText = "🎧 악기 연주: " + currentSelectedSong;
+        document.getElementById('game-song-description').innerText = "🎼 대표곡 설명: " + songDescription;
 
+        document.getElementById('r-desc').innerText = '🎼 '+country.name+' · '+currentSelectedSong+'\n게임용 악기 연주 음원 · 기존 짧은 멜로디를 반복 편곡했습니다.';
+        document.getElementById('game-song-description').innerText = currentSelectedSong+' · 게임용 악기 연주 / 나라 상징이 파란 선에 오면 터치해요!';
         const previewBtn = document.getElementById('preview-btn');
         const targetLink = getYoutubeSearchLink(currentSelectedSong);
         previewBtn.setAttribute('href', targetLink);
@@ -583,9 +897,8 @@
         stopRhythmGame();
         idx = 0;
         score = { A:0, B:0, C:0, D:0 };
-        document.documentElement.style.setProperty('--page-bg-image', 'url("세계 가족 문화 성향 테스트 사진.png")');
-        document.getElementById('p3').style.display = 'none';
-        document.getElementById('p1').style.display = 'block';
+        document.documentElement.style.setProperty('--page-bg-image', 'url("family-assets/family-rhythm-hero.png")');
+        showOnlyPage('p1');
     }
 
     function setDifficulty(diff, element) {
@@ -597,6 +910,38 @@
         }
     }
 
+
+    function enterTabletGameScreen() {
+        document.body.classList.add('rhythm-screen');
+        const target = document.getElementById('p3');
+        const request = target.requestFullscreen || target.webkitRequestFullscreen;
+        if (request && !(document.fullscreenElement || document.webkitFullscreenElement)) {
+            try {
+                const pending = request.call(target);
+                if (pending && pending.catch) pending.catch(() => {});
+            } catch (_) { /* Viewport mode remains active. */ }
+        }
+        requestAnimationFrame(resizeRhythmCanvas);
+    }
+    function leaveTabletGameScreen() {
+        document.body.classList.remove('rhythm-screen');
+        if ((document.fullscreenElement || document.webkitFullscreenElement) === document.getElementById('p3')) {
+            const exit = document.exitFullscreen || document.webkitExitFullscreen;
+            if (exit) try { const pending=exit.call(document); if(pending&&pending.catch)pending.catch(()=>{}); } catch(_) {}
+        }
+    }
+    function resizeRhythmCanvas() {
+        if (!document.getElementById('p3').classList.contains('game-mode') || !canvas) return;
+        canvas.width = Math.max(1,canvas.parentElement.clientWidth);
+        canvas.height = Math.max(1,canvas.parentElement.clientHeight);
+        notes.forEach(note => { note.width = canvas.width / laneCount; });
+        if (ctx) drawGame();
+    }
+    window.addEventListener('resize',()=>requestAnimationFrame(resizeRhythmCanvas));
+    document.addEventListener('fullscreenchange',()=>requestAnimationFrame(resizeRhythmCanvas));
+    document.addEventListener('webkitfullscreenchange',()=>requestAnimationFrame(resizeRhythmCanvas));
+    if (window.visualViewport) window.visualViewport.addEventListener('resize',()=>requestAnimationFrame(resizeRhythmCanvas));
+
     function toggleRhythmGame() {
         initAudio(); // 게임을 시작할 때 비로소 오디오 엔진 활성화 시도
         
@@ -605,6 +950,7 @@
         
         if (!gameRunning) {
             document.getElementById('p3').classList.add('game-mode');
+            enterTabletGameScreen();
             gameArea.style.display = 'block';
             startBtn.innerText = "게임 종료하기";
             startBtn.style.background = "#dc3545";
@@ -615,6 +961,7 @@
     }
 
     function stopRhythmGame() {
+        leaveTabletGameScreen();
         gameRunning = false;
         stopBgm(); 
         cancelAnimationFrame(gameAnimationId);
@@ -622,8 +969,8 @@
         document.getElementById('game-area').style.display = 'none';
         const startBtn = document.getElementById('game-start-btn');
         if(startBtn) {
-            startBtn.innerText = "게임 시작하기";
-            startBtn.style.background = "#28a745";
+            startBtn.innerText = quizUnlocked ? "🎵 대표곡 리듬게임 시작하기" : "🔒 퀴즈 풀고 게임 시작하기";
+            startBtn.style.background = quizUnlocked ? "#28a745" : "#f0ad4e";
         }
     }
 
@@ -642,11 +989,18 @@
         notes = [];
         rhythmChart = buildRhythmChart(currentSelectedSong, difficulty);
         rhythmChartIndex = 0;
-        currentGameDuration = (rhythmChart.length ? rhythmChart[rhythmChart.length - 1].hitTime : diffSettings[difficulty].durationMs) + 2500;
+        currentGameDuration = Math.min(songTracks[currentSelectedSong].durationMs, (rhythmChart.length ? Math.max(...rhythmChart.map(n=>n.hitTime+n.holdMs)) : 30000) + 1500);
         judgmentText = "";
         gameRunning = true;
-        
-        startBgm(); 
+        const run = ++audioRunId;
+        gameAudio.currentTime = 0;
+        gameAudio.play().then(()=>{
+            if(run!==audioRunId||!gameRunning)gameAudio.pause();
+        }).catch(()=>{
+            if(run!==audioRunId)return;
+            stopRhythmGame();
+            alert('음원을 재생할 수 없습니다. world song 폴더가 게임 파일 옆에 있는지 확인해 주세요.');
+        });
         gameLoop();
     }
 
@@ -674,9 +1028,10 @@
     }
 
     function updateGame() {
+        if(gameAudio.paused && !isFinished)return;
         const settings = diffSettings[difficulty];
         
-        const elapsed = Date.now() - gameStartTime;
+        const elapsed = musicTimeMs();
         const remaining = Math.max(0, currentGameDuration - elapsed);
         
         const min = Math.floor(remaining / 60000);
@@ -693,17 +1048,35 @@
                 width: canvas.width / laneCount,
                 height: 18,
                 hitTime: chartNote.hitTime,
-                freq: chartNote.freq
+                freq: chartNote.freq,
+                holdMs: chartNote.holdMs || 0,
+                holding: false
             });
             rhythmChartIndex++;
         }
         
         for (let i = notes.length - 1; i >= 0; i--) {
-            notes[i].y += settings.speed;
-            
-            if (notes[i].y > canvas.height) {
+            if (notes[i].holding) {
+                notes[i].y = judgeLineY;
+                if (elapsed >= notes[i].hitTime + notes[i].holdMs) {
+                    if (keyState[notes[i].lane]) {
+                        showJudgment("HOLD OK");
+                        gameScore += 150;
+                        gameHp = Math.min(100, gameHp + 5);
+                        document.getElementById('game-score').innerText = gameScore;
+                        updateHpBar();
+                        notes.splice(i, 1);
+                    }
+                }
+                continue;
+            }
+            notes[i].y = judgeLineY - ((notes[i].hitTime - elapsed) / travelMs) * judgeLineY;
+
+            if (elapsed > notes[i].hitTime + 230) {
+                const missedFreq = notes[i].freq || 261.63;
                 notes.splice(i, 1);
                 showJudgment("MISS");
+                playTone(missedFreq * Math.pow(2, -1 / 12), 'sawtooth', 0.14, 0.09);
                 
                 gameHp -= 4; 
                 if (gameHp < 0) gameHp = 0;
@@ -713,8 +1086,9 @@
                     gameRunning = false;
                     stopBgm();
                     setTimeout(() => {
-                        alert("💥 GAME OVER!\n체력이 모두 소진되었습니다.\n최종 점수: " + gameScore);
                         stopRhythmGame();
+                        renderLeaderboard(currentSelectedSong);
+                        alert("💥 GAME OVER!\n체력이 모두 소진되었습니다.\n최종 점수: " + gameScore + "\n완주하지 못해 TOP 5에는 기록되지 않았습니다.");
                     }, 100);
                     return;
                 }
@@ -726,8 +1100,10 @@
             gameRunning = false;
             stopBgm();
             setTimeout(() => {
-                alert("🎉 음악 완주 성공!\n" + currentSelectedSong + " 연주를 끝까지 마무리했습니다!\n최종 점수: " + gameScore);
+                const rank = saveLeaderboardScore();
                 stopRhythmGame();
+                const rankText = rank > 0 ? "\n🏆 현재 TOP 5 중 " + rank + "위입니다!" : "\nTOP 5에는 들지 못했지만 기록에 도전해 보세요!";
+                alert("🎉 음악 완주 성공!\n" + currentPlayerName + "님이 " + currentSelectedSong + "을(를) " + gameScore + "점으로 클리어했습니다!" + rankText);
             }, 500);
         }
 
@@ -765,12 +1141,22 @@
         const noteColors = ["#ff4757", "#2ed573", "#1e90ff", "#ffa502"];
         notes.forEach(note => {
             ctx.fillStyle = noteColors[note.lane];
-            ctx.fillRect(note.lane * laneWidth + 6, note.y, laneWidth - 12, note.height);
+            if (note.holdMs > 0) {
+                const holdHeight = Math.max(42, (note.holdMs / ((judgeLineY / diffSettings[difficulty].speed / 60) * 1000)) * judgeLineY);
+                const visibleHoldHeight = note.holding ? Math.max(20, holdHeight * Math.max(0, (note.hitTime + note.holdMs - (musicTimeMs())) / note.holdMs)) : holdHeight;
+                ctx.globalAlpha = 0.62;
+                ctx.fillRect(note.lane * laneWidth + 12, note.y - visibleHoldHeight, laneWidth - 24, visibleHoldHeight + note.height);
+                ctx.globalAlpha = 1;
+                ctx.strokeStyle = "#ffffff";
+                ctx.lineWidth = 2;
+                ctx.strokeRect(note.lane * laneWidth + 12, note.y - visibleHoldHeight, laneWidth - 24, visibleHoldHeight + note.height);
+            }
+            drawCountryNote(note,laneWidth);
         });
         
         if (judgmentTimer > 0) {
             ctx.font = "bold 26px sans-serif";
-            if (judgmentText === "PERFECT") ctx.fillStyle = "#2ed573";
+            if (judgmentText === "PERFECT" || judgmentText === "HOLD" || judgmentText === "HOLD OK") ctx.fillStyle = "#2ed573";
             else if (judgmentText === "GOOD") ctx.fillStyle = "#ffa502";
             else ctx.fillStyle = "#ff4757";
             ctx.textAlign = "center";
@@ -780,6 +1166,7 @@
 
     function handleKeyDown(e) {
         if (!gameRunning) return;
+        if (e.repeat) return;
         if (e.key === 's' || e.key === 'S') pressLane(0);
         if (e.key === 'd' || e.key === 'D') pressLane(1);
         if (e.key === 'k' || e.key === 'K') pressLane(2);
@@ -788,16 +1175,15 @@
 
     function handleKeyUp(e) {
         if (!gameRunning) return;
-        if (e.key === 's' || e.key === 'S') keyState[0] = false;
-        if (e.key === 'd' || e.key === 'D') keyState[1] = false;
-        if (e.key === 'k' || e.key === 'K') keyState[2] = false;
-        if (e.key === 'l' || e.key === 'L') keyState[3] = false;
+        if (e.key === 's' || e.key === 'S') releaseLane(0);
+        if (e.key === 'd' || e.key === 'D') releaseLane(1);
+        if (e.key === 'k' || e.key === 'K') releaseLane(2);
+        if (e.key === 'l' || e.key === 'L') releaseLane(3);
     }
 
     function pressLane(laneIndex) {
         if (!gameRunning) return;
         keyState[laneIndex] = true;
-        setTimeout(() => { keyState[laneIndex] = false; }, 80);
 
         const judgeLineY = canvas.height - 20;
         let hit = false;
@@ -806,13 +1192,23 @@
 
         for (let i = 0; i < notes.length; i++) {
             if (notes[i].lane === laneIndex) {
-                let noteCenter = notes[i].y + notes[i].height / 2;
+                if (notes[i].holding) continue;
+                let noteCenter = notes[i].y;
                 let distance = Math.abs(noteCenter - judgeLineY);
-                let timingDiff = Math.abs((Date.now() - gameStartTime) - notes[i].hitTime);
+                let timingDiff = Math.abs((musicTimeMs()) - notes[i].hitTime);
                 
                 if (distance < 28 && timingDiff < 230) {
                     hit = true;
                     const hitFreq = notes[i].freq || hitFreqs[laneIndex];
+
+                    if (notes[i].holdMs > 0) {
+                        notes[i].holding = true;
+                        notes[i].y = judgeLineY;
+                        showJudgment("HOLD");
+                        gameScore += 50;
+                        playTone(hitFreq, 'triangle', Math.max(0.2, notes[i].holdMs / 1000), 0.15);
+                        break;
+                    }
 
                     if (distance < 12 && timingDiff < 130) {
                         showJudgment("PERFECT");
@@ -835,9 +1231,40 @@
         }
         
         if (!hit) {
-            playTone(130, 'sawtooth', 0.08, 0.15); 
+            const nearestNote = notes.reduce((nearest, note) => {
+                const diff = Math.abs((musicTimeMs()) - note.hitTime);
+                return !nearest || diff < nearest.diff ? { freq: note.freq, diff } : nearest;
+            }, null);
+            const wrongBaseFreq = nearestNote && nearestNote.freq ? nearestNote.freq : hitFreqs[laneIndex];
+            playTone(wrongBaseFreq * Math.pow(2, 1 / 12), 'sawtooth', 0.1, 0.13);
+            showJudgment("MISS");
         }
         document.getElementById('game-score').innerText = gameScore;
+    }
+
+    function releaseLane(laneIndex) {
+        keyState[laneIndex] = false;
+        if (!gameRunning) return;
+        const elapsed = musicTimeMs();
+        for (let i = notes.length - 1; i >= 0; i--) {
+            const note = notes[i];
+            if (note.lane === laneIndex && note.holding) {
+                notes.splice(i, 1);
+                if (elapsed >= note.hitTime + note.holdMs - 90) {
+                    showJudgment("HOLD OK");
+                    gameScore += 150;
+                    gameHp = Math.min(100, gameHp + 5);
+                    document.getElementById('game-score').innerText = gameScore;
+                    updateHpBar();
+                } else {
+                    showJudgment("EARLY");
+                    gameHp = Math.max(0, gameHp - 6);
+                    updateHpBar();
+                    playTone((note.freq || 261.63) * Math.pow(2, 1 / 12), 'sawtooth', 0.12, 0.12);
+                }
+                break;
+            }
+        }
     }
 
     function showJudgment(text) {
