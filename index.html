@@ -299,7 +299,18 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
     }
 
     // 🚨 핵심 수정: 스크립트 최상단에 화면 전환 함수를 배치하여 무조건 작동하도록 보장
+    function enterTestFullscreen() {
+        const target = document.documentElement;
+        const request = target.requestFullscreen || target.webkitRequestFullscreen;
+        if (!request || document.fullscreenElement || document.webkitFullscreenElement) return;
+        try {
+            const pending = request.call(target);
+            if (pending && pending.catch) pending.catch(() => {});
+        } catch (_) { /* Continue the test if fullscreen is unavailable. */ }
+    }
+
     function forceStartTest() {
+        enterTestFullscreen();
         try {
             showOnlyPage('p2');
             showQ();
