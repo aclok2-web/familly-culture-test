@@ -485,19 +485,47 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
         const radius = Math.min(getNoteSize(canvas.width / laneCount) * .35, canvas.width / laneCount * .44);
         return canvas.height - radius - 12;
     }
-    function drawCountryNote(note,laneWidth) {
-        const index = countryNoteIndices[currentSelectedCountry] || 0;
-        const col=index%5,row=Math.floor(index/5);
-        const bands=[[.015,.27],[.27,.50],[.50,.735],[.735,.97]];
-        const sw=countryNoteAtlas.naturalWidth/5;
-        const sy=countryNoteAtlas.naturalHeight*bands[row][0];
-        const sh=countryNoteAtlas.naturalHeight*(bands[row][1]-bands[row][0]);
-        const size=getNoteSize(laneWidth);
-        const x=note.lane*laneWidth+laneWidth/2,y=note.y;
+    function getNoteRect(laneWidth) {
+        return { width: laneWidth * .80, height: Math.max(36, Math.min(64, laneWidth * .48)) };
+    }
+    function drawCountryNote(note, laneWidth) {
+        const {width, height} = getNoteRect(laneWidth);
+        const x = note.lane * laneWidth + laneWidth / 2 - width / 2;
+        const y = note.y - height / 2;
+        const color = ['#ff4757','#2ed573','#1e90ff','#ffa502'][note.lane];
         ctx.save();
-        ctx.shadowColor=['#ff4757','#2ed573','#1e90ff','#ffa502'][note.lane];ctx.shadowBlur=12;
-        if(countryNoteAtlas.complete&&countryNoteAtlas.naturalWidth)ctx.drawImage(countryNoteAtlas,col*sw,sy,sw,sh,x-size/2,y-size/2,size,size);
-        else {ctx.beginPath();ctx.arc(x,y,size*.35,0,Math.PI*2);ctx.fill();}
+        ctx.shadowColor = color; ctx.shadowBlur = 12;
+        ctx.fillStyle = color;
+        ctx.fillRect(x, y, width, height);
+        ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
+        ctx.strokeRect(x, y, width, height);
+        ctx.shadowBlur = 0;
+        // Keep the country's original ornament inside a rectangular note face.
+        const index = countryNoteIndices[currentSelectedCountry] || 0;
+        const col = index % 5, row = Math.floor(index / 5);
+        const bands = [[.015,.27],[.27,.50],[.50,.735],[.735,.97]];
+        if (countryNoteAtlas.complete && countryNoteAtlas.naturalWidth) {
+            const sw = countryNoteAtlas.naturalWidth / 5;
+            const sy = countryNoteAtlas.naturalHeight * bands[row][0];
+            const sh = countryNoteAtlas.naturalHeight * (bands[row][1] - bands[row][0]);
+            ctx.save();
+            ctx.beginPath(); ctx.rect(x + 3, y + 3, width - 6, height - 6); ctx.clip();
+            // Fit the entire atlas cell without cropping or stretching it.
+            const availableWidth = Math.max(1, width - 30);
+            const availableHeight = Math.max(1, height - 6);
+            const scale = Math.min(availableWidth / sw, availableHeight / sh);
+            const artworkWidth = sw * scale;
+            const artworkHeight = sh * scale;
+            ctx.drawImage(countryNoteAtlas, col * sw, sy, sw, sh,
+                x + 3 + (availableWidth - artworkWidth) / 2,
+                y + (height - artworkHeight) / 2, artworkWidth, artworkHeight);
+            ctx.restore();
+        }
+        ctx.fillStyle = 'rgba(8,15,30,.78)';
+        ctx.fillRect(x + width - 24, y + height - 23, 22, 21);
+        ctx.fillStyle = '#fff'; ctx.font = 'bold 15px sans-serif';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText(['S','D','K','L'][note.lane], x + width - 13, y + height - 12);
         ctx.restore();
     }
 
@@ -516,9 +544,9 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
     let difficulty = 'easy';
     
     const diffSettings = {
-        easy: { speed: 4.0, durationMs: 30000, density: 2 },
-        normal: { speed: 6.0, durationMs: 45000, density: 1 },
-        hard: { speed: 8.5, durationMs: 60000, density: 1 }
+        easy: { speed: 4.0, travelMs: 2400, durationMs: 30000, perfectMs: 110, goodMs: 210 },
+        normal: { speed: 6.0, travelMs: 1950, durationMs: 45000, perfectMs: 90, goodMs: 175 },
+        hard: { speed: 8.5, travelMs: 1550, durationMs: 60000, perfectMs: 70, goodMs: 145 }
     };
 
     let notes = [];
@@ -543,31 +571,66 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
         return ((noteData.d * 10) / 60 + 0.05) * 1000;
     }
 
-    function getLaneForMelodyNote(noteData, noteIndex, diff) {
-        const lanePatterns = {
-            easy: [0, 1, 2, 3],
-            normal: [0, 2, 1, 3, 1, 2, 3, 0],
-            hard: [0, 2, 3, 1, 3, 0, 1, 2]
-        };
-        const pattern = lanePatterns[diff] || lanePatterns.easy;
-        return pattern[noteIndex % pattern.length];
+    function shuffleLanes(values, random) {
+        const result = values.slice();
+        for (let i = result.length - 1; i > 0; i--) {
+            const j = Math.floor(random() * (i + 1));
+            [result[i], result[j]] = [result[j], result[i]];
+        }
+        return result;
     }
 
-    function buildRhythmChart(songName, diff) {
+    function buildRhythmChart(songName, diff, random = Math.random) {
         const track = songTracks[songName];
-        if (!track) throw new Error('연결된 음원이 없습니다: '+songName);
+        if (!track) throw new Error('연결된 음원이 없습니다: ' + songName);
         const settings = diffSettings[diff];
-        const end = Math.min(settings.durationMs+4200,track.durationMs-1500);
-        const chart=[];
-        track.events.forEach((event,index)=>{
-            if(event.time>=end)return;
-            if(diff==='easy'&&index%2!==0)return;
-            const lane=getLaneForMelodyNote(event,chart.length,diff);
-            const holdMs=diff!=='easy'&&event.duration>=650&&chart.length%5===4?Math.min(event.duration*.75,1000):0;
-            chart.push({hitTime:event.time,lane,freq:event.freq,holdMs});
-            if(diff==='hard'&&event.duration>=650)chart.push({hitTime:event.time+Math.round(event.duration/2),lane:(lane+1)%4,freq:event.freq,holdMs:0});
+        const end = Math.min(settings.durationMs + 4200, track.durationMs - 1500);
+        const chart = [];
+        // The WAV files were rendered from these events. Keep every note onset
+        // on its actual musical event instead of imposing an unrelated BPM grid.
+        const motifs = [
+            [0,2,1,3,2,0,3,1], [0,1,0,2,3,1,3,2],
+            [3,1,2,0,2,3,0,1], [1,3,0,2,1,0,3,2],
+            [0,0,2,1,3,2,1,3], [2,0,3,1,0,2,3,1]
+        ];
+        let lanes = [0,1,2,3], motif = motifs[0], lastMotif = -1;
+        const busyUntil = [-Infinity,-Infinity,-Infinity,-Infinity];
+        const recent = [];
+        track.events.forEach((event, index) => {
+            if (event.time >= end) return;
+            if (index % 8 === 0) {
+                lanes = shuffleLanes([0,1,2,3], random);
+                let next = Math.floor(random() * motifs.length);
+                if (next === lastMotif) next = (next + 1) % motifs.length;
+                motif = motifs[next]; lastMotif = next;
+            }
+            // Easy follows most of the melody, with a short breath every sixth note.
+            if (diff === 'easy' && index % 6 === 5) return;
+            const available = lanes.filter(lane => event.time >= busyUntil[lane]);
+            if (!available.length) return;
+            let lane = lanes[motif[index % 8]];
+            if (!available.includes(lane)) lane = available[0];
+            // Avoid repeating the same key three times in a row.
+            if (recent.length >= 2 && recent.at(-1) === lane && recent.at(-2) === lane) {
+                lane = available.find(value => value !== lane) ?? lane;
+            }
+            const holdChance = diff === 'hard' ? .28 : .19;
+            const holdMs = diff !== 'easy' && event.duration >= 650 && random() < holdChance
+                ? Math.round(Math.min(event.duration * .75, 1100)) : 0;
+            chart.push({hitTime:event.time, lane, freq:event.freq, holdMs});
+            busyUntil[lane] = event.time + holdMs + 180;
+            recent.push(lane);
+            const chordChance = diff === 'hard' ? .28 : .14;
+            if (diff !== 'easy' && index > 3 && random() < chordChance) {
+                const partners = available.filter(value => value !== lane);
+                if (partners.length) {
+                    const partner = partners[Math.floor(random() * partners.length)];
+                    chart.push({hitTime:event.time,lane:partner,freq:event.freq,holdMs:0});
+                    busyUntil[partner] = event.time + 180;
+                }
+            }
         });
-        return chart.sort((a,b)=>a.hitTime-b.hitTime);
+        return chart.sort((a,b) => a.hitTime - b.hitTime || a.lane - b.lane);
     }
 
     function resetCultureQuiz(countryName) {
@@ -992,6 +1055,7 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
         document.getElementById('game-score').innerText = gameScore;
         updateHpBar();
         notes = [];
+        keyState = [false, false, false, false];
         rhythmChart = buildRhythmChart(currentSelectedSong, difficulty);
         rhythmChartIndex = 0;
         currentGameDuration = Math.min(songTracks[currentSelectedSong].durationMs, (rhythmChart.length ? Math.max(...rhythmChart.map(n=>n.hitTime+n.holdMs)) : 30000) + 1500);
@@ -1044,7 +1108,7 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
         document.getElementById('game-time').innerText = min + ":" + (sec < 10 ? "0" + sec : sec);
 
         const judgeLineY = getJudgeLineY();
-        const travelMs = (judgeLineY / settings.speed / 60) * 1000;
+        const travelMs = settings.travelMs;
         while (rhythmChartIndex < rhythmChart.length && elapsed >= rhythmChart[rhythmChartIndex].hitTime - travelMs) {
             const chartNote = rhythmChart[rhythmChartIndex];
             notes.push({
@@ -1077,7 +1141,7 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
             }
             notes[i].y = judgeLineY - ((notes[i].hitTime - elapsed) / travelMs) * judgeLineY;
 
-            if (elapsed > notes[i].hitTime + 230) {
+            if (elapsed > notes[i].hitTime + settings.goodMs) {
                 const missedFreq = notes[i].freq || 261.63;
                 notes.splice(i, 1);
                 showJudgment("MISS");
@@ -1130,11 +1194,11 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
         }
         
         const receptorColors = ["#ff4757", "#2ed573", "#1e90ff", "#ffa502"];
-        const receptorRadius = Math.min(getNoteSize(laneWidth) * .35, laneWidth * .44);
+        const receptorRect = getNoteRect(laneWidth);
         for (let i = 0; i < laneCount; i++) {
             ctx.save();
             ctx.beginPath();
-            ctx.arc(i * laneWidth + laneWidth / 2, judgeLineY, receptorRadius, 0, Math.PI * 2);
+            ctx.rect(i * laneWidth + (laneWidth - receptorRect.width) / 2, judgeLineY - receptorRect.height / 2, receptorRect.width, receptorRect.height);
             ctx.fillStyle = keyState[i] ? receptorColors[i] : "rgba(255,255,255,0.10)";
             ctx.globalAlpha = keyState[i] ? .65 : 1;
             ctx.fill();
@@ -1158,14 +1222,14 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
         notes.forEach(note => {
             ctx.fillStyle = noteColors[note.lane];
             if (note.holdMs > 0) {
-                const holdHeight = Math.max(42, (note.holdMs / ((judgeLineY / diffSettings[difficulty].speed / 60) * 1000)) * judgeLineY);
+                const holdHeight = Math.max(42, (note.holdMs / diffSettings[difficulty].travelMs) * judgeLineY);
                 const visibleHoldHeight = note.holding ? Math.max(20, holdHeight * Math.max(0, (note.hitTime + note.holdMs - (musicTimeMs())) / note.holdMs)) : holdHeight;
                 ctx.globalAlpha = 0.62;
-                ctx.fillRect(note.lane * laneWidth + 12, note.y - visibleHoldHeight, laneWidth - 24, visibleHoldHeight + note.height);
+                ctx.fillRect(note.lane * laneWidth + laneWidth * .1, note.y - visibleHoldHeight, laneWidth * .8, visibleHoldHeight);
                 ctx.globalAlpha = 1;
                 ctx.strokeStyle = "#ffffff";
                 ctx.lineWidth = 2;
-                ctx.strokeRect(note.lane * laneWidth + 12, note.y - visibleHoldHeight, laneWidth - 24, visibleHoldHeight + note.height);
+                ctx.strokeRect(note.lane * laneWidth + laneWidth * .1, note.y - visibleHoldHeight, laneWidth * .8, visibleHoldHeight);
             }
             drawCountryNote(note,laneWidth);
         });
@@ -1213,7 +1277,7 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
                 let distance = Math.abs(noteCenter - judgeLineY);
                 let timingDiff = Math.abs((musicTimeMs()) - notes[i].hitTime);
                 
-                if (distance < 28 && timingDiff < 230) {
+                if (timingDiff <= diffSettings[difficulty].goodMs) {
                     hit = true;
                     const hitFreq = notes[i].freq || hitFreqs[laneIndex];
 
@@ -1226,7 +1290,7 @@ body.rhythm-screen .box { position:fixed; inset:0; width:100%; max-width:none; h
                         break;
                     }
 
-                    if (distance < 12 && timingDiff < 130) {
+                    if (timingDiff <= diffSettings[difficulty].perfectMs) {
                         showJudgment("PERFECT");
                         gameScore += 100;
                         gameHp = Math.min(100, gameHp + 6); 
